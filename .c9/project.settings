@@ -1,8 +1,15 @@
 {
+    "ace": {
+        "@tabSize": 4
+    },
     "build": {
         "@saveall": true
     },
+    "instance": {
+        "@automaticShutdown": "30"
+    },
     "language": {
+        "@unusedFunctionArgs": true,
         "tern_defs": {
             "json()": {
                 "browser": {
