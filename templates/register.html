@@ -1,0 +1,21 @@
+<html>
+	<link rel="stylesheet" href={{ url_for( 'static', filename='index.css' )}} />
+	<center>
+		<body>
+			<div class = "container1">
+				<form action = "/result2" method = "POST">
+					<h1>Registration</h1>
+					<h2>Username: 
+						<br>
+							<input type = "text" name = "username" />
+					</h2>
+					<h2>Password: 
+						<br>
+							<input type = "text" name = "password" />
+						</h2>
+						<input class = "submit" type = "submit" value = "Register" />
+				</form>
+			</div>
+		</body>
+	</center>
+</html>

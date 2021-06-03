@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href={{ url_for( 'static', filename='admin.css' ) }} />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+</head>
+
+<body> 
+    <div style="text-align:center">
+        <h1>ADMIN</h1>
+        <h1>{{song}}</h1>
+        <h3>By: {{name}}</h3>
+        <img src={{artist_img}} height="100px" width="100px" class="circle">
+        <br>
+        <img src={{image_url}} height="300px" width="300px" class="rounded"> 
+    </div>
+    <br>
+    <div class='audio-container'>
+        <audio controls>
+          <source src={{song_preview}} type="audio/mpeg">
+        </audio>
+    </div>
+    <div style="text-align:center">
+        <a style="font-size: 12px" href={{song_lyrics}}>Click here to see the lyrics!</a>
+    </div>
+
+</body>
+
+</html>

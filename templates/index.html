@@ -1,0 +1,18 @@
+<html>
+	<link rel="stylesheet" href={{ url_for( 'static', filename='index.css' )}} />
+	<center>
+		<body>
+			<div class = "container1">
+				<img src="/static/images/instavibe.png" height="200px" width="200px" class="prof">
+				
+				<form action = "/login" method = "POST">
+					<input class = "submit" type = "submit" value = "Login" />
+				</form>
+				
+				<form action = "/register" method = "POST">
+					<input class = "submit" type = "submit" value = "Register" />
+				</form>
+			</div>
+		</body>
+	</center>
+</html>
