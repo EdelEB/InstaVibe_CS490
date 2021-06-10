@@ -24,19 +24,30 @@
 					</div>
 				</div>
 				<div class="d-flex justify-content-center form_container">
-					<form action = "/result2" method = "POST">
+					<form action = "/post" method = "POST">
 						<div class="input-group mb-3">
-							<h5 style="text-align:center">Username is Taken, Please Try Another</h5>
 							<div class="input-group-append">
 								<span class="input-group-text"><i class="fas fa-user"></i></span>
 							</div>
-							<input type="text" name="username" class="form-control input_user" value="" placeholder="username">
+							<input type="text" name="image_link" class="form-control input_user" value="" placeholder="Image Link">
 						</div>
 						<div class="input-group mb-2">
 							<div class="input-group-append">
 								<span class="input-group-text"><i class="fas fa-key"></i></span>
 							</div>
-							<input type="text" name="password" class="form-control input_pass" value="" placeholder="password">
+							<input type="text" name="artist" class="form-control input_pass" value="" placeholder="Artist">
+						</div>
+						<div class="input-group mb-2">
+							<div class="input-group-append">
+								<span class="input-group-text"><i class="fas fa-key"></i></span>
+							</div>
+							<input type="text" name="song" class="form-control input_pass" value="" placeholder="Song Title">
+						</div>
+						<div class="input-group mb-2">
+							<div class="input-group-append">
+								<span class="input-group-text"><i class="fas fa-key"></i></span>
+							</div>
+							<input type="text" name="caption" class="form-control input_pass" value="" placeholder="Caption">
 						</div>
 						<div class="form-group">
 							<div class="custom-control custom-checkbox">
@@ -44,7 +55,7 @@
 							</div>
 						</div>
 							<div class="d-flex justify-content-center mt-3 login_container">
-				 	<button name="button" class="btn login_btn" type = "submit" value = "Register">Register</button>
+				 	<button name="button" class="btn login_btn" type = "submit" value = "post">Post</button>
 				   </div>
 					</form>
 				</div>

@@ -1,6 +1,7 @@
 body {
-    background-color: #e7f5e5;
+    background-color: #191414;
     font-family: 'Montserrat', sans-serif;
+    color:#1DB954;
 }
 
 .container {
@@ -42,7 +43,7 @@ img.rounded {
 }
 
 a:link {
-  color: black;
+  color: #1DB954;
   text-decoration: none;
 }
 

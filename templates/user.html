@@ -1,31 +1,64 @@
-<!DOCTYPE html>
-<html>
+<header>
+	<link rel="stylesheet" href={{ url_for( 'static', filename='user.css' )}} />
+	<div class="topnav">
+</div>
+	<form action = "/search" method = "POST">
+		<div class="input-group mb-3">
+			<div class="input-group-append">
+				<span class="input-group-text"><i class="fas fa-user"></i></span>
+			</div>
+			<input type="text" name="search" class="form-control input_user" value="" placeholder="Search...">
+		</div>
+		<button name="button" class="btn login_btn" type = "search" value = "Search">Search</button>
+	</form>
+	<div class="container">
 
-<head>
-    <link rel="stylesheet" href={{ url_for( 'static', filename='user.css' ) }} />
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
-</head>
+		<div class="profile">
 
-<body> 
-    <div style="text-align:center">
-        <h1>USER</h1>
-        <h1>{{song}}</h1>
-        <h3>By: {{name}}</h3>
-        <img src={{artist_img}} height="100px" width="100px" class="circle">
-        <br>
-        <img src={{image_url}} height="300px" width="300px" class="rounded"> 
-    </div>
-    <br>
-    <div class='audio-container'>
-        <audio controls>
-          <source src={{song_preview}} type="audio/mpeg">
-        </audio>
-    </div>
-    <div style="text-align:center">
-        <a style="font-size: 12px" href={{song_lyrics}}>Click here to see the lyrics!</a>
-    </div>
+			<div class="profile-image">
 
-</body>
+				<img src="https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg" alt="">
 
-</html>
+			</div>
+
+			<div class="profile-user-settings">
+
+				<h1 class="profile-user-name">{{user}}</h1>
+				<form action = "/create_post" method = "POST">
+					<button button name="button" type = "submit" value = "Create" class="btn profile-edit-btn">Create Post</button>
+				</form>
+
+			</div>
+
+			<div class="profile-bio">
+
+				<p><span class="profile-real-name">{{username}}</span> 🎵  Show Your Sound! 🎵️</p>
+
+			</div>
+
+		</div>
+		<!-- End of profile section -->
+
+	</div>
+	<!-- End of container -->
+
+</header>
+
+<main>
+
+	<div class="container">
+
+		<div class="gallery">
+			{% if ids != None %}
+				{% for num in ids %}
+				    <form action = "/view_post" method = "POST">
+		                <div class="gallery-item" tabindex="0">
+						<input type="image" src={{snaps}}[{{loop.index}}] class="gallery-image" alt="" id=ids[{{loop.index}}] onclick="onLoadConfigPress(document.getElementById(ids{{loop.index}}.value)">
+						</div>
+					</form>
+	            {% endfor %}
+            {% endif %}
+
+		</div>
+
+</main>

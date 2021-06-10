@@ -1,0 +1,40 @@
+
+
+Posting capability (Google Image + Spotify Song Link)
+Comment capability
+
+Search for posts & users
+
+Direct Chat (Discord API?)
+
+Back Buttons
+
+
+
+
+Jonpierre :
+- Spruce up current pages
+- create user page template
+- create admin page template
+- Search bar
+
+Aaron : 
+- when deleting a post, is the deleter the poster or admin? if not cannot delete
+- search request : fetch users 
+- order DMs & Comments based on time posted 
+
+
+
+
+Edel : 
+- Post entity           : done
+- Commment entity       : done
+- DM entity             : done
+
+
+
+
+
+
+
+

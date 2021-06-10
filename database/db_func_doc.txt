@@ -1,84 +1,274 @@
-DOCUMENTATION for "db_func.py" (database functionality)
+DOCUMENTATION for "db_func.py" (Database Functionality)
     -Edel Barcenas
 
-Database Info: 
+DATABASE INFO: 
     url : mysql://be3c5020bf5627:3bfc3cfa@us-cdbr-east-04.cleardb.com/heroku_f7729a769a3bca5?reconnect=true
     username : be3c5020bf5627
     password : 3bfc3cfa
     hostname : us-cdbr-east-04.cleardb.com
     database : heroku_f7729a769a3bca5
     
+ENTITIES & ATTRIBUTES:
+    Comment:
+        com_id: 
+            unique integer assigned by database upon creation of a comment
+            used to  identify comments
+        sender:
+            username of user who posted a comment
+        post_id:
+            post_id attribute of the post that the comment is under
+            used to retrieve all comments from a specific post
+        message:
+            500 character string message
+            (content of the comment)
+        ctime: 
+            comment time in datetime format
+            year-month-day hour:minutes:seconds
+            YYYY-MM-DD hh:mm:ss
+            this is saved by the database upon creation
+
+    DM (Direct Message): 
+        msg_id: 
+            unique integer assigned by database upon creation of a DM
+            used to  identify DM's
+        sender:
+            username of user who sent message
+        receiver:
+            username of user receiving message
+        message: 
+            500 character string
+            (content of message)
+        dtime: 
+            direct message time in datetime format
+            year-month-day hour:minutes:seconds
+            YYYY-MM-DD hh:mm:ss
+            this is saved by the database upon creation
+            
+    Follow:
+        follower:
+            username of user doing the following
+        target:
+            username of user being followed
     
-Public Functions (for use when db_func is imported):
-    addUser(string fname, string lname, string username, string password, string email, int isAdmin ):
-        -task : adds user with specified attributes to the database
-        -all strings must be < 20 chars
-        -isAdmin must be 1 | 0
-        
-    GETTER METHODS ( all gets use __getUserInfo() ) :
-        
-        getFname(string username):
-        
-        getLname(string username):
-        
-        getPassword(string username):
-        
-        getEmail(string username):
-        
-        getAdminStatus(string username): 
-            -returns 1 if username is an Admin | 0 if not
-        
-        getBlockStatus(string username):
-            -returns 1 if username is blocked | 0 if not
+    Post: 
+        post_id:
+            unique integer assigned by database upon creation of a post
+            used to identify posts
+        poster:
+            username of user who made the post
+        song_title:
+            30 char string title of song that is linked to in the post
+        artist: 
+            30 char string of artist that wrote the song that is linked to in post
+        song_link:
+            100 character string of hyperlink to song
+        image:
+            100 character string of hyperlink to an image
+        caption:
+            500 character string to be placed below post/at the top of comments section
+        ptime:
+            post time in datetime format
+            year-month-day hour:minutes:seconds
+            YYYY-MM-DD hh:mm:ss
+            this is saved by the database upon creation
     
-    SETTER METHODS ( all sets use __runQuery() ) : 
+    User: 
+        fname:
+            20 char string first name of user
+        lname:
+            20 char string last name of user
+        username:
+            20 char unique string chosen by user
+            used to uniquely identify users
+        password:
+            20 char string
+        email:
+            20 char string
+        admin_status:
+            0 | 1
+            1: admin , 0: not admin
+        block_status:
+            0 | 1
+            1: blocked , 0: not blocked
+            database sets to 0 upon creation
+    
+    
+PUBLIC FUNCTIONS (for use when db_func is imported):
+    
+    ADD METHODS
         
-        setFname(string username, string new_fname):
+        addComment(string sender, int post_id, string message,):
+            -post_id : the ID number of the post that the comment is under
+            -message <500 chars 
+            
+        addDM( string sender, string receiver):
+            -message <500 chars
+            
+        addFollow( string follower, string target): 
+            -creates a one way connection follower-->target != target-->follwer
+            
+        addPost(string poster, string song_title, string artist, string song_link, string image, string caption):
+            -song_title & artist <20 chars
+            -song_link <100 chars
+            -image : hyperlink <100 chars
+            -caption <500 chars
         
-        setLname(string username, string new_lname):
-        
-        setUsername(string old_username, string new_username):
+        addUser(string fname, string lname, string username, string password, string email, int isAdmin ):
             -all strings must be < 20 chars
+            -isAdmin must be 1 | 0
+            
+    DELETE METHODS
         
-        setPassword(string username, string new_password):
+        deleteComment(int com_id)
         
-        setEmail(string username, string new_email):
+        deleteFollow(string follower, string target)
         
-        setAdminStatus(string username, int status):
-            -status must be 0 | 1
+        deletePost(int post_id)
         
-        setBlockStatus(string username, int status):
-            -status must be 0 | 1
+        deleteUser(string username)
         
-        
-Private Variables (not for import usage):
-    __drop_table_commands : 
-        -a dictionary with format [ table name : SQL command to drop/delete table ]
-        
-    __init_table_commands : 
-        -a dictionary with format [ table name : SQL command to initialize/create table ]
     
-Private Functions (not for import usage): 
-
-    __connect(): this file does work as intended currently, variables are useless out of scope
-        -task : establishes connection to database and initializes cursor
+    GETTER METHODS (organized by database entity) :
+          
+        Multiple Entity:
         
-    __disconnect(): idk if this works or not, it's good to close stuff but idk if this does it. It works with or without it.
-        -task : closes connection to database and pointer
+            getCreator( char entity, int id_number ):
+                    -returns string username < 20 chars
+                    -entity : ('p' : post), ('c' : comment), ('d' : direct message)
+                    -id_number : post_id | com_id | msg_id , depending on entity
+            
+            getText( char entity, int id_number ):
+                -returns string < 500 char
+                -entity : ('p' : post), ('c' : comment), ('d' : direct message)
+                -id_number : post_id | com_id | msg_id , depending on entity
+            
+            getTimeCreated( char entity, int id_number ):
+                -returns datetime.datetime() object that can be converted to string using str()
+                -entity : ('p' : post), ('c' : comment), ('d' : direct message)
+                -id_number : post_id | com_id | msg_id , depending on entity
 
+        DM: 
+            getConvo(string user1, string user2):
+                -returns an array of msg_id's ordered by time posted from 1st to last
+                -msg_id : message id number : essential for referencing specific messages
+        
+        POST: 
+            getArtist(int post_id)
+                returns string < 30 chars
+            
+            getComments(int post_id):
+                -returns an array of com_id's ordered by time posted from 1st to last
+                -com_id : comment id number : essential for referencing specific comments
+            
+            getImageLink(int post_id): 
+                -returns string < 100 chars
+            
+            getSongLink(int post_id):   
+                returns string < 100 chars
+            
+            getSongTitle(int post_id)
+                returns string < 30 chars
+                
+        USER  ( all use __getUserInfo() ): 
+            getFname(string username):
+            
+            getLname(string username):
+            
+            getPassword(string username):
+            
+            getEmail(string username):
+            
+            getAdminStatus(string username): 
+                -returns 1 if username is an Admin | 0 if not
+            
+            getBlockStatus(string username):
+                -returns 1 if username is blocked | 0 if not
+                
+            getFollowers(string username_arg):
+                -returns an array of all the usernames users that follow username_arg
+                
+            getPosts(string username)
+                -returns an array of post_id's ordered by time posted from 1st to last
+                -post_id : post id number : essential for referencing specific posts
+                
+                
+    SETTER METHODS ( all sets use __runQuery() ): 
+      
+        POST: 
+        
+        USER : 
+            setAdminStatus(string username, int status):
+                -status must be 0 | 1
+            
+            setBlockStatus(string username, int status):
+                -status must be 0 | 1
+            
+            setEmail(string username, string new_email):
+            
+            setFname(string username, string new_fname):
+            
+            setLname(string username, string new_lname):
+            
+            setPassword(string username, string new_password):
+            
+            setUsername(string old_username, string new_username):
+                -all strings must be < 20 chars
+            
+        MISC METHODS: 
+            
+            usernameTaken(string username):
+                -returns 1 if username exists in database | 0 if not
+            
+            searchPosts(string search):
+                -return array of post_id where (search == substring of song_title) | (search == substring of artist)
+        
+            searchUsers(string search):
+                -returns array of usernames where search == substring username
+                
+            
+        
+PRIVATE FUNCTIONS (not for import usage): 
+
+    __connector(): 
+        -task : establishes connection to database and can be used to initializes cursor with
+                db_con = __connector()
+                myCursor = db_con.cursor()
+        db_con & myCursor should be closed when finished being used
+        
     __initDB():
         -task : resets the database. Wipes all table data and re-initializes all tables
         -uses __setTableCommands()
         -uses commands present in __drop_table_commands & __init_table_commands
         
+    __getPostInfo(int post_id): 
+        -returns tuple of all post information
+        -tuple format: ( post_id, poster, song_title, artist, song_link, image_link, caption, ptime ) 
+    
+    __getUserInfo(string username):
+        -returns a tuple of all user information
+        -return tuple format: ( first_name, last_name, username, password, email, admin_status, block_status )
+            
+    __queryCommit(string query , tuple data):
+        -connects to database to then run SQL query then commit changes
+        -returns nothing
+        -used to update the database
+        
+    __queryTuple(string query , tuple data):
+        -connects to database to then run SQL query
+        -returns single tuple
+
+    __queryArray(string query , tuple data):
+        -connects to database to then run SQL query
+        -returns array of tuples
+    
     __setTableCommands():
         -task : initializes __drop_table_commands & __init_table_commands
         -side comment : I'd prefer to have the commands in a seperate .sql file but the cursor.execute() was giving me problems
 
-    __runQuery(string query , tuple data):
-        -task : connects to database to then runs SQL query
-
-    __getUserInfo(string username):
-        -task : returns a tuple of all user information
-            tuple format: ( first_name, last_name, username, password, email, admin_status, block_status )
+PRIVATE VARIABLES (not for import usage):
+    __drop_table_commands : 
+        -a dictionary with format [ table name : SQL command to drop/delete table ]
+        
+    __init_table_commands : 
+        -a dictionary with format [ table name : SQL command to initialize/create table ]
     
