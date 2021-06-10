@@ -6,8 +6,8 @@
 <body>
     <div> 
         {% if ids != None %}
-				{% for ms in chat %}
-				    <form action = "/view_chat" method = "POST">
+				{% for message in message_array %}
+				    <form action = "/chat" method = "POST">
 		                <div class="gallery-item" tabindex="0">
 		                	<h2>{{ids[loop.index0]}}</h2>
 							<form action = "/create_post" method = "POST">
@@ -29,7 +29,7 @@
 
 <script>
     while (true) {
-        document.body.innerHTML = 
+        
     }
     
 </script>

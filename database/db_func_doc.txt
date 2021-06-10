@@ -135,7 +135,7 @@ PUBLIC FUNCTIONS (for use when db_func is imported):
             getCreator( char entity, int id_number ):
                     -returns string username < 20 chars
                     -entity : ('p' : post), ('c' : comment), ('d' : direct message)
-                    -id_number : post_id | com_id | msg_id , depending on entity
+                    -id_number : post_id | com_id | msg_id , depending on entity  
             
             getText( char entity, int id_number ):
                 -returns string < 500 char

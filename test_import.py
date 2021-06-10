@@ -1,6 +1,6 @@
 import database.db_func as db
 
-
+'''
 
 db.addUser("Elon", "Musk", "Rocketman", "Ihearttesla", "elon@neural.net", 1);
 db.addUser("Jeff", "Bezos", "TheBookyman", "1daydelivery", "bezos@amazon.com", 1);
@@ -18,7 +18,7 @@ db.addFollow("BookMaster2000", "OG");
 
 db.addPost("OG" , "Dancing in the Moonlight", "King Harvest", "https.song.link", "https.image.link", "This song is so underrated. I love this song so much")
 db.addPost("OG" , "Dancing in the Dark", "Bruce Springsteen", "https.track.link", "https.pic.link", "Does dancing in moonlight count as dancing in the dark?");
-
+'''
 #db.addDM("OG", "LJ", "I'm so glad you like that song")
 #db.addDM("LJ", "OG", "Totally. I've been listening to that song since I was little")
 #db.addDM("OG", "LJ", "Ever heard of 'Into The Deep'? It's really good too")
@@ -66,3 +66,12 @@ for x in array :
 #pNumArr = db.searchPosts("Dan");
 #for x in pNumArr:
 #    print(db.getSongTitle(x));
+
+
+#db.addComment("Rocketman", 25, "SICK SONG BRO" );
+#db.addComment("OG", 25, "I think its sick too" );
+#db.addComment("LJ", 25, "Awsomesauce" );
+
+#print(db.getComments(25));
+
+#print(db.getText('c' , 5 ));

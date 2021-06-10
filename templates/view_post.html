@@ -15,7 +15,20 @@
         <h3>By: {{name}}</h3>
         <br>
         	<img src={{image_url}} height="300px" width="300px" class="rounded">
-        	<h4>{{user}}: {{caption}}</h4>
+        	<h3>{{user}}: {{caption}}</h3>
+        	<br>
+        	{% if comments != None %}
+				{% for comment in comments %}
+				    <h2>{{commenters[loop.index0]}}: {{comments[loop.index0]}}</h2>
+					<br>
+					<br>
+	            {% endfor %}
+            {% endif %}
+        	<form action = "/add_comment" method = "POST">
+        	    <input type="hidden" name='post_id' class="form-control input_pass" value={{postid}}>
+				<input type="text" name="message" class="form-control input_pass" value="" placeholder="Type here!">
+				<button button name="button" type = "submit" value = "Send" class="btn profile-edit-btn">Send Message</button>
+			</form>
     </div>
     <br>
     <div class='audio-container'>

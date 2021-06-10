@@ -154,25 +154,70 @@ def post():
                     caption = cap
                 )
                 
-                
-@app.route("/view_post", methods=['GET', 'POST'])
-def view_post():
-    postid = request.form["post_id"]
-    post_info = db.__getPostInfo(postid)
-    username = post_info[1]
+@app.route("/add_comment", methods=['GET', 'POST'])   
+def add_comment():
+    sender = username;
+    post_id = request.form["post_id"];
+    message = request.form["message"];
+    post_info = db.__getPostInfo(post_id)
+    username1 = post_info[1]
     track = post_info[2]
     artist_name = post_info[3]
     preview = post_info[4]
     image = post_info[5]
     cap = post_info[6]
+    comments1 = []
+    commenters1 = []
     
+    db.addComment(sender, post_id, message);
+    com_id_arr = db.getComments(post_id)
+    
+    for com_id in com_id_arr:
+        comments1.append(db.getText('c', com_id))
+        commenters1.append(db.getCreator('c', com_id))
+        
+    return flask.render_template("view_post.html",
+                song = track,
+                name = artist_name,
+                song_preview = preview,
+                image_url = image,
+                user = username1,
+                caption = cap,
+                comments = comments1,
+                commenters = commenters1,
+                post_id = post_id
+                )            
+                
+@app.route("/view_post", methods=['GET', 'POST'])
+def view_post():
+    postid = request.form["post_id"]
+    post_info = db.__getPostInfo(postid)
+    username1 = post_info[1]
+    track = post_info[2]
+    artist_name = post_info[3]
+    preview = post_info[4]
+    image = post_info[5]
+    cap = post_info[6]
+    comms = db.getComments(postid)
+    comments1 = []
+    commenters1 = []
+    for comm in comms:
+        comments1.append(db.getText('c', postid))
+        commenters1.append(db.getCreator('c', postid))
+    
+    print(comms)   
+    print(commenters1);
+    print(comments1); 
     return flask.render_template("view_post.html",
                     song = track,
                     name = artist_name,
                     song_preview = preview,
                     image_url = image,
-                    user = username,
-                    caption = cap
+                    user = username1,
+                    caption = cap,
+                    comments = comments1,
+                    commenters = commenters1,
+                    post_id = postid
                 )
 
 @app.route("/result", methods=['GET', 'POST'])
