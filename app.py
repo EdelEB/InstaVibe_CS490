@@ -45,6 +45,36 @@ def login():
 def register():
     return flask.render_template("register.html") #Registration page
     
+@app.route("/search", methods=['GET', 'POST'])
+def search():
+    search = request.form["searched_user"]
+    post_ids = []
+    post_images = []
+    search_results = db.searchUsers(search)
+    
+    if search_results:
+        search_user = search_results[0]
+        
+        post_ids = db.getPosts(search_user)
+        if len(post_ids) != 0:
+            # print(post_ids)
+            for post in post_ids:
+                post_images.append(db.getImageLink(post))
+            # print(post_images)
+        else:
+            post_ids = None
+            post_images = None
+        return flask.render_template("user.html", 
+            user = search_user,
+            ids = post_ids,
+            snaps = post_images
+        )
+        
+    else:
+        return flask.render_template("userDNE.html",
+                                    user = username)
+
+    
 @app.route("/result2", methods=['GET', 'POST'])
 def result2():
     username = request.form["username"]
@@ -60,7 +90,18 @@ def result2():
 @app.route("/create_post", methods=['GET', 'POST'])
 def create_post():
     return flask.render_template("create_post.html")
-
+    
+@app.route("/chat", methods=['GET', 'POST'])
+def chat():
+    user1 = username;
+    user2 = request.form["user2"];
+    msg_arr = [];
+    for msg_id in db.getConvo(user1, user2):
+        msg_arr.append( db.getCreator('d', msg_id), db.getText('d', msg_id) );
+    
+    return flask.render_template("chat.html", msg_arr);
+    
+    
 @app.route("/post", methods=['GET', 'POST'])
 def post():
     image = request.form["image_link"]
@@ -116,14 +157,14 @@ def post():
                 
 @app.route("/view_post", methods=['GET', 'POST'])
 def view_post():
-    post_id = request.form[num]
-    post_info = db.__getPostInfo(post_id)
+    postid = request.form["post_id"]
+    post_info = db.__getPostInfo(postid)
     username = post_info[1]
     track = post_info[2]
     artist_name = post_info[3]
     preview = post_info[4]
     image = post_info[5]
-    cap = post_info(6)
+    cap = post_info[6]
     
     return flask.render_template("view_post.html",
                     song = track,
@@ -200,10 +241,10 @@ def result():
             if db.getAdminStatus(username) == 0: # If login is user
                 post_ids = db.getPosts(username)
                 if len(post_ids) != 0:
-                    print(post_ids)
+                    # print(post_ids)
                     for post in post_ids:
                         post_images.append(db.getImageLink(post))
-                    print(post_images)
+                    # print(post_images)
                 else:
                     post_ids = None
                     post_images = None

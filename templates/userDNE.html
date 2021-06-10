@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <header>
 	<link rel="stylesheet" href={{ url_for( 'static', filename='user.css' )}} />
 	<div class="topnav">
@@ -49,21 +48,8 @@
 
 	<div class="container">
 
-		<div class="gallery">
-			{% if ids != None %}
-				{% for post_id in ids %}
-				    <form action = "/view_post" method = "POST">
-		                <div class="gallery-item" tabindex="0">
-		                	<h2>{{ids[loop.index0]}}</h2>
-		                	<input type="hidden" name='post_id' class="form-control input_pass" value={{ids[loop.index0]}}>
-							<input type="image" src="{{snaps[loop.index0]}}" class="gallery-image" name='image'>
-						</div>
-					</form>
-					<br>
-					<br>
-	            {% endfor %}
-            {% endif %}
-
-		</div>
+		<h2>User Does Not Exist, Please Search Again</h2>
+		
+	</div>
 
 </main>

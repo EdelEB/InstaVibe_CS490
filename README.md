@@ -1,24 +1,3 @@
-    ____       ____
-   /    \     /    \
-  /      \   /      \
- |        | |        | 
-  \      /   \      /
-   \____/     \____/
-        |     |
-        |     |
-        |     |
-        |     |
-        |     |
-        |     |
-        |     |
-        |_____|
-       /       \ 
-      |         |
-       \       /
-        \__|__/
+InstaVibe is a social media web application made for musicians interested in sharing their talents. 
 
-I created the database directory with the file db_func.py (database functionality), which has functions in it you can use
-to access the database. 
-
-Use "import database.db_func as db" to import my functions
--then you can call any of the public functions using "db.Function_Name()"
+The application utilizes the Spotify API in order to link to the original versions of songs performed in posts.
