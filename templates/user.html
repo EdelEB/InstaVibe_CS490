@@ -54,7 +54,6 @@
 				{% for post_id in ids %}
 				    <form action = "/view_post" method = "POST">
 		                <div class="gallery-item" tabindex="0">
-		                	<h2>{{ids[loop.index0]}}</h2>
 		                	<input type="hidden" name='post_id' class="form-control input_pass" value={{ids[loop.index0]}}>
 							<input type="image" src="{{snaps[loop.index0]}}" class="gallery-image" name='image'>
 						</div>
@@ -63,6 +62,12 @@
 					<br>
 	            {% endfor %}
             {% endif %}
+            
+            <form action="/login" name="form1" method="post" action="login.html">
+				<label class="logoutLblPos">
+				<input name="submit2" type="submit" id="submit2" value="Log out">
+				</label>
+			  </form>
 
 		</div>
 

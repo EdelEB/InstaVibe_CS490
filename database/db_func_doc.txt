@@ -1,12 +1,22 @@
 DOCUMENTATION for "db_func.py" (Database Functionality)
     -Edel Barcenas
 
-DATABASE INFO: 
+DATABASE_1 INFO: 
     url : mysql://be3c5020bf5627:3bfc3cfa@us-cdbr-east-04.cleardb.com/heroku_f7729a769a3bca5?reconnect=true
     username : be3c5020bf5627
     password : 3bfc3cfa
     hostname : us-cdbr-east-04.cleardb.com
     database : heroku_f7729a769a3bca5
+    
+DATABASE_2 INFO:
+    url : mysql://b600fe51c41038:f2ad2d79@us-cdbr-east-04.cleardb.com/heroku_3c9e97a749311b6?reconnect=true
+    username : b600fe51c41038
+    password : f2ad2d79
+    hostname : us-cdbr-east-04.cleardb.com
+    database : heroku_3c9e97a749311b6
+
+?reconnect=true
+
     
 ENTITIES & ATTRIBUTES:
     Comment:
@@ -27,22 +37,34 @@ ENTITIES & ATTRIBUTES:
             YYYY-MM-DD hh:mm:ss
             this is saved by the database upon creation
 
-    DM (Direct Message): 
+    Conversation:
+        convo_id:
+            unique integer assigned by database upon creation
+            used to identify conversations
+        user1:
+            username of a user in the conversation
+        user2:
+            username of a user in the conversation
+        new_message:
+            1 if there is an unread message in the convo || 0 otherwise
+            
+    Message (Direct Message): 
         msg_id: 
-            unique integer assigned by database upon creation of a DM
-            used to  identify DM's
+            unique integer assigned by database upon creation of a Message
+            used to  identify Messsages
         sender:
             username of user who sent message
-        receiver:
-            username of user receiving message
         message: 
             500 character string
             (content of message)
-        dtime: 
+        mtime: 
             direct message time in datetime format
             year-month-day hour:minutes:seconds
             YYYY-MM-DD hh:mm:ss
             this is saved by the database upon creation
+        is_read:
+            0 if message is unread
+            1 if message is read
             
     Follow:
         follower:
@@ -101,7 +123,13 @@ PUBLIC FUNCTIONS (for use when db_func is imported):
             -post_id : the ID number of the post that the comment is under
             -message <500 chars 
             
-        addDM( string sender, string receiver):
+        addConvo(string username1, string username2):
+            -creates a conversation entity
+            -convo_id is generated on creation
+            -new_message is set to 0 by default
+        
+        addMessage(int convo_id, string sender, string receiver, string message):
+            -convo_id references a conversation entity
             -message <500 chars
             
         addFollow( string follower, string target): 
@@ -134,25 +162,34 @@ PUBLIC FUNCTIONS (for use when db_func is imported):
         
             getCreator( char entity, int id_number ):
                     -returns string username < 20 chars
-                    -entity : ('p' : post), ('c' : comment), ('d' : direct message)
+                    -entity : ('p' : post), ('c' : comment), ('m' : message)
                     -id_number : post_id | com_id | msg_id , depending on entity  
             
             getText( char entity, int id_number ):
                 -returns string < 500 char
-                -entity : ('p' : post), ('c' : comment), ('d' : direct message)
+                -entity : ('p' : post), ('c' : comment), ('m' : message)
                 -id_number : post_id | com_id | msg_id , depending on entity
             
             getTimeCreated( char entity, int id_number ):
                 -returns datetime.datetime() object that can be converted to string using str()
-                -entity : ('p' : post), ('c' : comment), ('d' : direct message)
+                -entity : ('p' : post), ('c' : comment), ('m' : message)
                 -id_number : post_id | com_id | msg_id , depending on entity
 
-        DM: 
-            getConvo(string user1, string user2):
-                -returns an array of msg_id's ordered by time posted from 1st to last
-                -msg_id : message id number : essential for referencing specific messages
+        CONVERSATION:
+            getConvoId(string user1, string user2):
+                -returns convo_id of convo between those users
         
+            getMessages(int convo_id):
+                -returns array of message_id's
+        
+        MESSAGE: 
+            
+            
         POST: 
+            getPostInfo(int post_id): 
+                -returns tuple of all post information
+                -tuple format: ( post_id, poster, song_title, artist, song_link, image_link, caption, ptime ) 
+        
             getArtist(int post_id)
                 returns string < 30 chars
             
@@ -169,7 +206,11 @@ PUBLIC FUNCTIONS (for use when db_func is imported):
             getSongTitle(int post_id)
                 returns string < 30 chars
                 
-        USER  ( all use __getUserInfo() ): 
+        USER  ( all use getUserInfo() ): 
+            getUserInfo(string username):
+                -returns a tuple of all user information
+                -return tuple format: ( first_name, last_name, username, password, email, admin_status, block_status )
+                
             getFname(string username):
             
             getLname(string username):
@@ -194,6 +235,11 @@ PUBLIC FUNCTIONS (for use when db_func is imported):
                 
     SETTER METHODS ( all sets use __runQuery() ): 
       
+        CONVERSATION: 
+            setNewMessage(int convo_id, int bool_val):
+                -sets the new_message attribute of conversation with convo_id to bool_val
+                - 1 : there is a new message || 0 otherwise
+        
         POST: 
         
         USER : 
@@ -234,13 +280,16 @@ PRIVATE FUNCTIONS (not for import usage):
                 db_con = __connector()
                 myCursor = db_con.cursor()
         db_con & myCursor should be closed when finished being used
-        
+    
+    __sqlFileToCommands(file_name):
+        -task : take in a SQL file, break it into an array of individual SQL commands without comments
+        returns an array of SQL commands
+    
     __initDB():
         -task : resets the database. Wipes all table data and re-initializes all tables
-        -uses __setTableCommands()
-        -uses commands present in __drop_table_commands & __init_table_commands
+        -uses sqlFileToCommands()
         
-    __getPostInfo(int post_id): 
+    getPostInfo(int post_id): 
         -returns tuple of all post information
         -tuple format: ( post_id, poster, song_title, artist, song_link, image_link, caption, ptime ) 
     
@@ -261,14 +310,5 @@ PRIVATE FUNCTIONS (not for import usage):
         -connects to database to then run SQL query
         -returns array of tuples
     
-    __setTableCommands():
-        -task : initializes __drop_table_commands & __init_table_commands
-        -side comment : I'd prefer to have the commands in a seperate .sql file but the cursor.execute() was giving me problems
 
-PRIVATE VARIABLES (not for import usage):
-    __drop_table_commands : 
-        -a dictionary with format [ table name : SQL command to drop/delete table ]
-        
-    __init_table_commands : 
-        -a dictionary with format [ table name : SQL command to initialize/create table ]
-    
+

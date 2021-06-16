@@ -5,13 +5,36 @@ from flask import request
 from dotenv import load_dotenv, find_dotenv
 import random
 import database.db_func as db
-
+import time
+import threading
 
 app=flask.Flask(__name__)
 
 AUTH_URL = 'https://accounts.spotify.com/api/token'
 
 load_dotenv(find_dotenv()) # This is to load your API keys from .env
+
+
+####################################################################################
+
+def listenForMessages(username):
+    while True:
+        print("listening for messages to "+username+"\n");
+        for convo_id in db.getConvos(username):
+            if db.anyNewMessages(convo_id):
+                #send notification or make conversation with convo_id glow
+                print("NEW MESSAGE")
+                
+        time.sleep(6);
+
+#after login : 
+#message_listener = threading.Thread(target=listenForMessages, args=(username, ));
+
+message_listener = threading.Thread(target=listenForMessages, args=("NOBODY", ));
+#message_listener.start();
+
+####################################################################################
+
 
 # POST
 SPOT_KEY = os.environ['SPOT_KEY']
@@ -84,6 +107,7 @@ def result2():
         return flask.render_template("taken.html")
     else: # Successful registration takes user to login
         db.addUser('NULL', 'NULL', username, password, 'NULL', 0)
+             
         return flask.render_template("login.html",
                                     user = username)
         
@@ -91,19 +115,20 @@ def result2():
 def create_post():
     return flask.render_template("create_post.html")
     
-@app.route("/chat", methods=['GET', 'POST'])
-def chat():
+@app.route("/view_chat", methods=['GET', 'POST'])
+def view_chat():
     user1 = username;
     user2 = request.form["user2"];
     msg_arr = [];
-    for msg_id in db.getConvo(user1, user2):
-        msg_arr.append( db.getCreator('d', msg_id), db.getText('d', msg_id) );
+    for msg_id in db.getMessages(db.getConvoId(user1, user2)):
+        msg_arr.append( db.getCreator('m', msg_id), db.getText('m', msg_id) );
     
     return flask.render_template("chat.html", msg_arr);
     
     
 @app.route("/post", methods=['GET', 'POST'])
 def post():
+    
     image = request.form["image_link"]
     artist = request.form["artist"]
     song = request.form["song"]
@@ -154,18 +179,29 @@ def post():
                     caption = cap
                 )
                 
+
 @app.route("/add_comment", methods=['GET', 'POST'])   
 def add_comment():
     sender = username;
     post_id = request.form["post_id"];
     message = request.form["message"];
-    post_info = db.__getPostInfo(post_id)
+
+    post_id = request.form["post_id"]
+    post_info = db.getPostInfo(post_id);
     username1 = post_info[1]
     track = post_info[2]
     artist_name = post_info[3]
     preview = post_info[4]
     image = post_info[5]
     cap = post_info[6]
+    
+    # username1 = db.getCreator( 'p', post_id)
+    # track = db.getSongTitle(post_id)
+    # artist_name = db.getArtist(post_id)
+    # preview = db.getSongLink(post_id)
+    # image = db.getImageLink(post_id)
+    # cap = db.getText( 'p', post_id )
+    comms = db.getComments(post_id) #returns an array of comment_ids
     comments1 = []
     commenters1 = []
     
@@ -177,37 +213,43 @@ def add_comment():
         commenters1.append(db.getCreator('c', com_id))
         
     return flask.render_template("view_post.html",
-                song = track,
-                name = artist_name,
-                song_preview = preview,
-                image_url = image,
-                user = username1,
-                caption = cap,
-                comments = comments1,
-                commenters = commenters1,
-                post_id = post_id
-                )            
+        song = track,
+        name = artist_name,
+        song_preview = preview,
+        image_url = image,
+        user = username1,
+        caption = cap,
+        comments = comments1,
+        commenters = commenters1,
+        post_id = post_id
+    )            
                 
 @app.route("/view_post", methods=['GET', 'POST'])
 def view_post():
-    postid = request.form["post_id"]
-    post_info = db.__getPostInfo(postid)
+    
+    post_id = request.form["post_id"]
+    post_info = db.getPostInfo(post_id)
     username1 = post_info[1]
     track = post_info[2]
     artist_name = post_info[3]
     preview = post_info[4]
     image = post_info[5]
     cap = post_info[6]
-    comms = db.getComments(postid)
+    
+    # username1 = db.getCreator( 'p', post_id)
+    # track = db.getSongTitle(post_id)
+    # artist_name = db.getArtist(post_id)
+    # preview = db.getSongLink(post_id)
+    # image = db.getImageLink(post_id)
+    # cap = db.getText( 'p', post_id )
+    comms = db.getComments(post_id) #returns an array of comment_ids
+    
     comments1 = []
     commenters1 = []
     for comm in comms:
-        comments1.append(db.getText('c', postid))
-        commenters1.append(db.getCreator('c', postid))
+        comments1.append(db.getText('c', comm))
+        commenters1.append(db.getCreator('c', comm))
     
-    print(comms)   
-    print(commenters1);
-    print(comments1); 
     return flask.render_template("view_post.html",
                     song = track,
                     name = artist_name,
@@ -217,7 +259,7 @@ def view_post():
                     caption = cap,
                     comments = comments1,
                     commenters = commenters1,
-                    post_id = postid
+                    post_id = post_id
                 )
 
 @app.route("/result", methods=['GET', 'POST'])
@@ -283,6 +325,12 @@ def result():
     post_images=[]
     if db.usernameTaken(username):
         if db.getPassword(username) == password:
+            
+            ###################################################################################################################        
+            #message_listener = threading.Thread(target=listenForMessages, args=(username, ));
+            #message_listener.start();
+            ###################################################################################################################        
+            
             if db.getAdminStatus(username) == 0: # If login is user
                 post_ids = db.getPosts(username)
                 if len(post_ids) != 0:
@@ -320,7 +368,6 @@ def result():
             return flask.render_template("attempt.html")
     else: # If login is invalid
         return flask.render_template("attempt.html")
-
 
 app.run(
     port=int(os.getenv("PORT", 8080)), 

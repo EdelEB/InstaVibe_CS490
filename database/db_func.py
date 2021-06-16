@@ -10,98 +10,52 @@ import mysql.connector
 from datetime import datetime
 
 
-
-__drop_table_commands = {}      # { table name : SQL command to drop table }
-__init_table_commands = {}      # { table name : SQL command to initialize table }
-
 def __connector():
         db_con = mysql.connector.connect(
                 host="us-cdbr-east-04.cleardb.com",
-                user="be3c5020bf5627",
-                password="3bfc3cfa",
-                database="heroku_f7729a769a3bca5"
+                user="b600fe51c41038",
+                password="f2ad2d79",
+                database="heroku_3c9e97a749311b6"
         )
         
         return db_con;
 
-def __setTableCommands(): # fills the __drop_table_commands & __init_table_commands dictionaries
+def __sqlFileToCommands(file_name):
+    sql_file = open(file_name, "r");
+    
+    curr_string = "";
+    command_arr = [];
+    
+    for line in sql_file:
+        no_comments = line.split("--")[0];
         
-        __drop_table_commands["COMMENT"] = "DROP TABLE IF EXISTS COMMENT;" 
-        __drop_table_commands["DM"] = "DROP TABLE IF EXISTS DM;"
-        __drop_table_commands["FOLLOW"] = "DROP TABLE IF EXISTS FOLLOW;"
-        __drop_table_commands["POST"] = "DROP TABLE IF EXISTS POST;" 
-        __drop_table_commands["USER"] = "DROP TABLE IF EXISTS USER;"
- 
-        __init_table_commands["USER"] = ("CREATE TABLE USER("	
-                                                "fname          VARCHAR(20)             NOT NULL,"
-	                                        "lname          VARCHAR(20)             NOT NULL,"
-	                                        "username       VARCHAR(20)             NOT NULL,"
-	                                        "password       VARCHAR(20),"
-	                                        "email          VARCHAR(20),"
-	                                        "admin_status   SMALLINT                NOT NULL,"
-	                                        "block_status   SMALLINT                NOT NULL,"
-	                                        "PRIMARY KEY(username) );")
-	                                
-        __init_table_commands["FOLLOW"] = ("CREATE TABLE FOLLOW("
-	                                        "follower       VARCHAR(20)             NOT NULL,"
-	                                        "target         VARCHAR(20)             NOT NULL,"
-	                                        "FOREIGN KEY(follower) REFERENCES USER(username) ON DELETE CASCADE ON UPDATE CASCADE ,"
-	                                        "FOREIGN KEY(target) REFERENCES USER(username)  ON DELETE CASCADE ON UPDATE CASCADE,"
-	                                        "PRIMARY KEY(follower, target) );")
-	                                        
-        __init_table_commands["POST"] = ("CREATE TABLE POST("
-                                                "post_id        INT 	                AUTO_INCREMENT,"
-                                                "poster		VARCHAR(20) 	        NOT NULL,"
-                                                "song_title	VARCHAR(50) 	        NOT NULL,"
-                                                "artist		VARCHAR(50)		NOT NULL,"
-                                                "song_link	VARCHAR(500)		NOT NULL,"
-                                                "image		VARCHAR(500)		NOT NULL,"
-                                                "caption 	VARCHAR(500),"
-                                                "ptime		TIMESTAMP       	NOT NULL,"
-                                                "FOREIGN KEY(poster) REFERENCES USER(username) ON UPDATE CASCADE ON DELETE CASCADE,"
-                                                "PRIMARY KEY(post_id) );")
-                                                
-        __init_table_commands["COMMENT"] = ("CREATE TABLE COMMENT("
-                                                "com_id		INT			AUTO_INCREMENT,"
-                                                "sender		VARCHAR(20)		NOT NULL,"
-                                                "post_id	INT			NOT NULL,"
-                                                "message 	VARCHAR(500)		NOT NULL,"
-                                                "ctime		TIMESTAMP		NOT NULL,"
-                                                "FOREIGN KEY(sender) REFERENCES USER(username) ON UPDATE CASCADE ON DELETE CASCADE,"
-                                                "FOREIGN KEY(post_id) REFERENCES POST(post_id) ON DELETE CASCADE,"
-                                                "PRIMARY KEY(com_id) );")
-                                                
-        __init_table_commands["DM"] = ("CREATE TABLE DM("
-                                                "msg_id		INT 			AUTO_INCREMENT,"
-                                                "sender		VARCHAR(20) 		NOT NULL,"
-                                                "receiver	VARCHAR(20) 		NOT NULL,"
-                                                "message	VARCHAR(500),"
-                                                "dtime		TIMESTAMP		NOT NULL,"
-                                                "FOREIGN KEY(sender) REFERENCES USER(username) ON UPDATE CASCADE ON DELETE CASCADE,"
-                                                "FOREIGN KEY(receiver) REFERENCES USER(username) ON UPDATE CASCADE ON DELETE CASCADE,"
-                                                "PRIMARY KEY(msg_id) );")
+        for char in no_comments:
+            
+            if(char == ';'):
+                curr_string = curr_string + char;
+                command_arr.append(curr_string);
+                curr_string = "";
+                
+            elif(char == '\t' or char == '\n'):
+                curr_string = curr_string + ' ';
+                
+            else:
+                curr_string = curr_string + char;
+                
+    sql_file.close();
+    
+    return command_arr;
         
 def __initDB(): # drops existing Tables and then re-initializes them using __drop_table_commands & __init_table_commands
         
-        __setTableCommands();
         db_con = __connector()
         myCursor = db_con.cursor()
-            
-                
-        for table in __drop_table_commands: 
-                myCursor.execute( __drop_table_commands[table] )
-
-        for table in __init_table_commands:
-                temp_string = __init_table_commands[table]
-                myCursor.execute(temp_string)
-                
+                  
+        for command in __sqlFileToCommands("/home/ec2-user/environment/database/initTables.sql"):
+                myCursor.execute(command);     
                 
         myCursor.close()
         db_con.close()
-
-#__initDB();
-
-
 
 def __queryCommit(query, data):
        
@@ -150,11 +104,16 @@ def addComment(sender, post_id, message):
         values = ( sender, str(post_id), message, comment_time )
         __queryCommit( query , values )      
         
-def addDM( sender, receiver, message):
-        query = 'INSERT INTO DM(sender, receiver, message, dtime) VALUES(%s, %s, %s, %s);'
-        dm_time = str(datetime.now())[:19]              #gets current time
-        values = ( sender, receiver, message, dm_time )
-        __queryCommit( query , values)
+def addConvo(user1, user2):
+        query = 'INSERT INTO CONVERSATION(user1, user2, new_message) VALUES(%s, %s, 0);';
+        values = (user1, user2);
+        __queryCommit( query , values );
+
+def addMessage( convo_id, sender, receiver, message):
+        query = 'INSERT INTO Message(convo_id, sender, receiver, message, mtime, is_read) VALUES(%s, %s, %s, %s, %s, 0);';
+        mtime = str(datetime.now())[:19];              #gets current time
+        values = ( convo_id, sender, receiver, message, mtime );
+        __queryCommit( query , values);
 
 def addFollow(follower, target):
         
@@ -179,6 +138,8 @@ def addPost(poster, song_title, artist, song_link, image, caption):
 
 
 
+
+
 def deleteUser(username):
         query = 'DELETE FROM USER WHERE username = "'+username+'";'
         __queryCommit(query, "")
@@ -197,28 +158,35 @@ def deletePost(post_id):
         __queryCommit(query, "")
 
 
+def anyNewMessages(convo_id):
+        query = 'SELECT new_message FROM CONVERSATION WHERE convo_id = %s;';
+        return __queryTuple(query, convo_id);
 
-def __getUserInfo(username): #return tuple : ( fname, lname, username, pswrd, email, admin?, blocked? )
+def getUserInfo(username): #return tuple : ( fname, lname, username, pswrd, email, admin?, blocked? )
         query = 'SELECT * FROM USER WHERE username = "'+username+'";'
         return __queryTuple(query, "" )
-        
+
+def getPostInfo(post_id) : 
+        query = 'SELECT * FROM POST WHERE post_id = '+str(post_id)+' ;';
+        return __queryTuple(query, ''); #POSTS:  song_title, artist, song_link, image, caption 
+
 def getFname(username):
-        return __getUserInfo(username)[0];
+        return getUserInfo(username)[0];
         
 def getLname(username):
-       return __getUserInfo(username)[1];
+       return getUserInfo(username)[1];
        
 def getPassword(username): #this is definitely super insecure but were gonna work with it for now
-        return __getUserInfo(username)[3];
+        return getUserInfo(username)[3];
         
 def getEmail(username):
-        return __getUserInfo(username)[4];
+        return getUserInfo(username)[4];
 
 def getAdminStatus(username): #returns 1 if username isAdmin | 0 if not 
-        return __getUserInfo(username)[5];
+        return getUserInfo(username)[5];
         
 def getBlockStatus(username):
-        return __getUserInfo(username)[6];
+        return getUserInfo(username)[6];
 
 def getFollowers(username):
         query = 'SELECT follower FROM FOLLOW WHERE target = "'+username+'";';
@@ -233,13 +201,26 @@ def getComments(post_id):
         
         return array;
         
-def getConvo(user1, user2):
-        query = 'SELECT msg_id FROM DM WHERE (sender = %s AND receiver = %s) OR (sender = %s AND receiver = %s) ORDER BY dtime;';
-        values = (user1, user2, user2, user1);
-        
+def getConvos(user):
+        query = 'SELECT convo_id FROM CONVERSATION WHERE (user1 = %s OR user2 = %s);';
+        values = ( user, user );
         array = __queryArray(query, values);
         
         return array;
+        
+def getConvoId(user1, user2):
+        query = 'SELECT convo_id FROM CONVERSATION WHERE (user1 = %s AND user2 = %s) OR (user1 = %s AND user2 = %s);';
+        values = (user1, user2, user2, user1);
+        
+        return __queryTuple(query, values)[0];
+        
+        
+def getMessages(convo_id):
+        query = 'SELECT msg_id FROM Message WHERE convo_id = %s ORDER BY mtime';
+        array = __queryArray(query, (convo_id) );
+        
+        return array;
+
         
 def getPosts(username):
         query = 'SELECT post_id FROM POST WHERE poster = "'+username+'" ORDER BY ptime;';
@@ -247,17 +228,17 @@ def getPosts(username):
         
         return array;
 
-def getTimeCreated(entity, id_number) : # entity : (p : post), (c : comment), (d : direct message)
+def getTimeCreated(entity, id_number) : # entity : (p : post), (c : comment), (m : message)
         
         if entity == 'p' :
                 query = "SELECT ptime FROM POST WHERE post_id = "+str(id_number)+" ;";
         elif entity == 'c' :
                 query = "SELECT ctime FROM COMMENT WHERE com_id = "+str(id_number)+" ;";
-        elif entity == 'd' : 
-                query = "SELECT dtime FROM DM WHERE msg_id = "+str(id_number)+" ;";
+        elif entity == 'm' : 
+                query = "SELECT mtime FROM MESSAGE WHERE msg_id = "+str(id_number)+" ;";
         else : 
                 raise Exception("Invalid Arg 'entity' in getTimeCreated(id_number, entity) :"
-                                "\nTry ( 'p' : POST ) , ( 'c' : COMMENT ) , ( 'd' : DIRECT_MESSAGE");
+                                "\nTry ( 'p' : POST ) , ( 'c' : COMMENT ) , ( 'm' : MESSAGE");
         
         ret = __queryTuple(query, "");
         
@@ -267,17 +248,17 @@ def getTimeCreated(entity, id_number) : # entity : (p : post), (c : comment), (d
                 raise Exception("Entity identifier '"+entity+"' does not have"
                                 " any instances with id_number "+str(id_number));
 
-def getCreator(entity, id_number) :  # entity : (p : post), (c : comment), (d : direct message)
+def getCreator(entity, id_number) :  # entity : (p : post), (c : comment), (m : message)
         
         if entity == 'p' :
                 query = "SELECT poster FROM POST WHERE post_id = "+str(id_number)+" ;";
         elif entity == 'c' :
                 query = "SELECT sender FROM COMMENT WHERE com_id = "+str(id_number)+" ;";
-        elif entity == 'd' : 
-                query = "SELECT sender FROM DM WHERE msg_id = "+str(id_number)+" ;";
+        elif entity == 'm' : 
+                query = "SELECT sender FROM MESSAGE WHERE msg_id = "+str(id_number)+" ;";
         else : 
                 raise Exception("Invalid Arg 'entity' in getCreator(id_number, entity) :"
-                                "\nTry ( 'p' : POST ) , ( 'c' : COMMENT ) , ( 'd' : DIRECT_MESSAGE");
+                                "\nTry ( 'p' : POST ) , ( 'c' : COMMENT ) , ( 'm' : MESSAGE");
         
         ret = __queryTuple(query, "");
         
@@ -287,17 +268,17 @@ def getCreator(entity, id_number) :  # entity : (p : post), (c : comment), (d : 
                 raise Exception("Entity identifier '"+entity+"' does not have"
                                 " any instances with id_number "+str(id_number));
                                 
-def getText(entity, id_number) :  # entity : (p : post), (c : comment), (d : direct message)
+def getText(entity, id_number) :  # entity : (p : post), (c : comment), (m : message)
         
         if entity == 'p' :
                 query = "SELECT caption FROM POST WHERE post_id = "+str(id_number)+" ;";
         elif entity == 'c' :
                 query = "SELECT message FROM COMMENT WHERE com_id = "+str(id_number)+" ;";
-        elif entity == 'd' : 
-                query = "SELECT message FROM DM WHERE msg_id = "+str(id_number)+" ;";
+        elif entity == 'm' : 
+                query = "SELECT message FROM MESSAGE WHERE msg_id = "+str(id_number)+" ;";
         else : 
                 raise Exception("Invalid Arg 'entity' in getText(id_number, entity) :"
-                                "\nTry ( 'p' : POST ) , ( 'c' : COMMENT ) , ( 'd' : DIRECT_MESSAGE");
+                                "\nTry ( 'p' : POST ) , ( 'c' : COMMENT ) , ( 'm' : MESSAGE");
         
         ret = __queryTuple(query, "");
         if ret : 
@@ -307,28 +288,26 @@ def getText(entity, id_number) :  # entity : (p : post), (c : comment), (d : dir
                                 " any instances with id_number "+str(id_number));
 
 def getSongTitle(post_id) : 
-        return __getPostInfo(post_id)[2];
+        return getPostInfo(post_id)[2];
         
 def getArtist(post_id) : 
-        return __getPostInfo(post_id)[3];
+        return getPostInfo(post_id)[3];
         
 def getSongLink(post_id) : 
-        return __getPostInfo(post_id)[4];
+        return getPostInfo(post_id)[4];
         
 def getImageLink(post_id) : 
-        return __getPostInfo(post_id)[5];
-        
-def __getPostInfo(post_id) : 
-        query = 'SELECT * FROM POST WHERE post_id = '+str(post_id)+';'
-        return __queryTuple(query, "");
-        
+        return getPostInfo(post_id)[5];
         
 
-#POSTS:  song_title, artist, song_link, image, caption 
 
+def setNewMessage(convo_id, num):
+        query = 'UPDATE USER SET new_message = %s WHERE convo_id = %s;';
+        __queryCommit(query, (num) );
+        
 def setFname(username, fname):
-        query = 'UPDATE USER SET fname = %s WHERE username = %s;'
-        __queryCommit( query , (fname , username) )
+        query = 'UPDATE USER SET fname = %s WHERE username = %s;';
+        __queryCommit( query , (fname , username) );
 
 def setLname(username, lname):
         query = 'UPDATE USER SET lname = %s WHERE username = %s;'
@@ -353,16 +332,8 @@ def setAdminStatus(username, status):
 def setBlockStatus(username, status):
         query = 'UPDATE USER SET block_status = %s WHERE username = %s;'
         __queryCommit( query , (status , username) )
-
-
-# I know search Users can be used for this, but it was created after the middle man implemented usernameTaken()
-def usernameTaken(username):    # returns 1 if username is already in database | 0 if it is not
         
-        if( __getUserInfo(username) ):
-                return 1;
-        return 0;
-                
-        
+
 
 def searchUsers(search):
         query = "SELECT username FROM USER WHERE SUBSTRING(username, 1, %s) = %s ORDER BY username;";
@@ -375,5 +346,15 @@ def searchPosts(search):
         values = (search_len, search, search_len, search);
         array = __queryArray(query, values);
         return array;
+          
+# I know search Users can be used for this, but it was created after the middle man implemented usernameTaken()
+def usernameTaken(username):    # returns 1 if username is already in database | 0 if it is not
         
+        if( getUserInfo(username) ):
+                return 1;
+        return 0;
+      
+#def anyUnreadMessage(username):
+ #       for name in getFollowers(username):
+                
         

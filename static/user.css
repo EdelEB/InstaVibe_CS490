@@ -430,3 +430,22 @@ Remove or comment-out the code block below to see how the browser will fall-back
     border: 1px solid #ccc;
   }
 }
+
+.back_btn {
+    height: 40px;
+    width: 70px;
+    border-radius: 10px;
+    border: medium solid #e71111;
+    background-color: #130101;
+    color: #e71111;
+    float: right;
+    margin-right: 900px;
+    margin-top: -500px;
+}
+
+.logoutLblPos{
+
+    position:fixed;
+    right:10px;
+    top:5px;
+}

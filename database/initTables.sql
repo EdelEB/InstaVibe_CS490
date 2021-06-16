@@ -1,9 +1,10 @@
 
-DROP TABLE IF EXISTS USER;
-DROP TABLE IF EXISTS FOLLOW;
-DROP TABLE IF EXISTS POST;
+DROP TABLE IF EXISTS MESSAGE;
+DROP TABLE IF EXISTS CONVERSATION;
 DROP TABLE IF EXISTS COMMENT;
-DROP TABLE IF EXISTS DM;
+DROP TABLE IF EXISTS POST;
+DROP TABLE IF EXISTS FOLLOW;
+DROP TABLE IF EXISTS USER;
 
 CREATE TABLE USER(	
     fname 			VARCHAR(20)		   	NOT NULL,
@@ -29,10 +30,10 @@ CREATE TABLE FOLLOW(
 CREATE TABLE POST(
 	post_id			INT 					AUTO_INCREMENT,
 	poster			VARCHAR(20) 			NOT NULL,
-	song_title		VARCHAR(30) 			NOT NULL,
-	artist			VARCHAR(30)				NOT NULL,		
-	song_link		VARCHAR(100)			NOT NULL,			-- hyperlink to Spotify Song link
-	image			VARCHAR(100)			NOT NULL,			-- hyperlink to image
+	song_title		VARCHAR(50) 			NOT NULL,
+	artist			VARCHAR(50)				NOT NULL,		
+	song_link		VARCHAR(500)			NOT NULL,			-- hyperlink to Spotify Song link
+	image			VARCHAR(500)			NOT NULL,			-- hyperlink to image
 	caption 		VARCHAR(500),								-- caption is optional
 	ptime			TIMESTAMP				NOT NULL,			-- post time
 	
@@ -52,15 +53,28 @@ CREATE TABLE COMMENT(
 	PRIMARY KEY(com_id)
 );
 
-CREATE TABLE DM(												-- Direct Message
-	msg_id			INT 					AUTO_INCREMENT,		-- message ID number
-	sender			VARCHAR(20) 			NOT NULL,		
-	receiver		VARCHAR(20) 			NOT NULL,		
-	message			VARCHAR(500),							
-	dtime			TIMESTAMP				NOT NULL,			-- DM time
+CREATE TABLE CONVERSATION(
+	convo_id		INT						AUTO_INCREMENT,
+	user1			VARCHAR(20)				NOT NULL,
+	user2			VARCHAR(20)				NOT NULL,
+	new_message		SMALLINT				NOT NULL,			-- 1 if new message || 0 if not
 	
-	FOREIGN KEY(sender) REFERENCES USER(username) ON UPDATE CASCADE ON DELETE CASCADE,
-	FOREIGN KEY(receiver) REFERENCES USER(username) ON UPDATE CASCADE ON DELETE CASCADE,
-	PRIMARY KEY(msg_id) 
+	FOREIGN KEY(user1) REFERENCES USER(username) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(user2) REFERENCES USER(username) ON UPDATE CASCADE ON DELETE CASCADE,
+	PRIMARY KEY(convo_id, user1, user2)
 );
 
+CREATE TABLE MESSAGE(											-- Direct Message
+	msg_id			INT 					AUTO_INCREMENT,		-- message ID number
+	convo_id		INT						NOT NULL,
+	sender			VARCHAR(20) 			NOT NULL,		
+	receiver		VARCHAR(20)				NOT NULL,
+	message			VARCHAR(500),							
+	mtime			TIMESTAMP				NOT NULL,			-- message time
+	is_read			SMALLINT				NOT NULL,			-- 1 if read || 0 if unread
+	
+	FOREIGN KEY(convo_id) REFERENCES CONVERSATION(convo_id) ON DELETE CASCADE,
+	FOREIGN KEY(sender) REFERENCES USER(username) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(receiver) REFERENCES USER(username) ON UPDATE CASCADE ON DELETE CASCADE,
+	PRIMARY KEY(msg_id)
+);

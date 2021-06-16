@@ -21,14 +21,14 @@
 				{% for comment in comments %}
 				    <h2>{{commenters[loop.index0]}}: {{comments[loop.index0]}}</h2>
 					<br>
-					<br>
 	            {% endfor %}
             {% endif %}
         	<form action = "/add_comment" method = "POST">
-        	    <input type="hidden" name='post_id' class="form-control input_pass" value={{postid}}>
+        	    <input type="hidden" name='post_id' class="form-control input_pass" value={{post_id}}>
 				<input type="text" name="message" class="form-control input_pass" value="" placeholder="Type here!">
 				<button button name="button" type = "submit" value = "Send" class="btn profile-edit-btn">Send Message</button>
 			</form>
+			<button name="button" class="btn back_btn" type = "submit" value = "back" onClick="window.history.go(-1);">Back</button>
     </div>
     <br>
     <div class='audio-container'>

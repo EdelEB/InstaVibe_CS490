@@ -51,3 +51,16 @@ a:visited {
   color: blue;
   text-decoration: none;
 }
+
+.back_btn {
+  height: 40px;
+  width: 70px;
+  border-radius: 10px;
+  border: medium solid #e71111;
+  background-color: #130101;
+  color: #e71111;
+  float: left;
+  margin-top: -600px;
+  
+
+}

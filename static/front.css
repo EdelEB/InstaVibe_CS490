@@ -49,6 +49,15 @@
 			box-shadow: none !important;
 			outline: 0px !important;
 		}
+		.back_btn {
+			height: 40px;
+			width: 70px;
+			border-radius: 10px;
+			border: medium solid #e71111;
+			background-color: #130101;
+			color: #e71111;
+  			margin-top: 230px;
+		}
 		.login_container {
 			padding: 0 2rem;
 		}
