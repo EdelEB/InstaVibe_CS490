@@ -1,6 +1,7 @@
 astroid==2.3.0
 awscli==1.18.217
 backcall==0.2.0
+bidict==0.21.2
 botocore==1.20.79
 certifi==2020.12.5
 chardet==4.0.0
@@ -8,9 +9,14 @@ click==7.1.2
 colorama==0.4.3
 decorator==5.0.9
 Django==2.0.2
+dnspython==1.16.0
 docutils==0.15.2
+eventlet==0.31.0
 Flask==1.1.2
+Flask-Cors==3.0.10
+Flask-SocketIO==5.1.0
 git-remote-codecommit==1.15.1
+greenlet==1.1.0
 idna==2.10
 ikp3db==1.4.1
 importlib-metadata==4.0.1
@@ -44,6 +50,8 @@ pystache==0.5.4
 python-daemon==2.2.3
 python-dateutil==2.8.1
 python-dotenv==0.15.0
+python-engineio==4.2.0
+python-socketio==5.3.0
 pytz==2021.1
 PyYAML==5.3.1
 requests==2.25.1
