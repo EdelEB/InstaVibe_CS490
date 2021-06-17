@@ -36,6 +36,7 @@ CREATE TABLE POST(
 	image			VARCHAR(500)			NOT NULL,			-- hyperlink to image
 	caption 		VARCHAR(500),								-- caption is optional
 	ptime			TIMESTAMP				NOT NULL,			-- post time
+	lyric_link		VARCHAR(500)			NOT NULL,
 	
 	FOREIGN KEY(poster) REFERENCES USER(username) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY(post_id)

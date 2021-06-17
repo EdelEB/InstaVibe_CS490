@@ -1,14 +1,7 @@
 DOCUMENTATION for "db_func.py" (Database Functionality)
     -Edel Barcenas
 
-DATABASE_1 INFO: 
-    url : mysql://be3c5020bf5627:3bfc3cfa@us-cdbr-east-04.cleardb.com/heroku_f7729a769a3bca5?reconnect=true
-    username : be3c5020bf5627
-    password : 3bfc3cfa
-    hostname : us-cdbr-east-04.cleardb.com
-    database : heroku_f7729a769a3bca5
-    
-DATABASE_2 INFO:
+DATABASE INFO:
     url : mysql://b600fe51c41038:f2ad2d79@us-cdbr-east-04.cleardb.com/heroku_3c9e97a749311b6?reconnect=true
     username : b600fe51c41038
     password : f2ad2d79
@@ -83,9 +76,9 @@ ENTITIES & ATTRIBUTES:
         artist: 
             30 char string of artist that wrote the song that is linked to in post
         song_link:
-            100 character string of hyperlink to song
+            500 character string of hyperlink to song
         image:
-            100 character string of hyperlink to an image
+            500 character string of hyperlink to an image
         caption:
             500 character string to be placed below post/at the top of comments section
         ptime:
@@ -93,6 +86,8 @@ ENTITIES & ATTRIBUTES:
             year-month-day hour:minutes:seconds
             YYYY-MM-DD hh:mm:ss
             this is saved by the database upon creation
+        lyric_link: 
+            500 character string of hyperlink to song lyrics
     
     User: 
         fname:
@@ -188,7 +183,7 @@ PUBLIC FUNCTIONS (for use when db_func is imported):
         POST: 
             getPostInfo(int post_id): 
                 -returns tuple of all post information
-                -tuple format: ( post_id, poster, song_title, artist, song_link, image_link, caption, ptime ) 
+                -tuple format: ( post_id, poster, song_title, artist, song_link, image_link, caption, ptime, lyric_link) 
         
             getArtist(int post_id)
                 returns string < 30 chars
@@ -205,6 +200,9 @@ PUBLIC FUNCTIONS (for use when db_func is imported):
             
             getSongTitle(int post_id)
                 returns string < 30 chars
+                
+            getLyricLink(int post_id)
+                return string < 500 chars
                 
         USER  ( all use getUserInfo() ): 
             getUserInfo(string username):
@@ -289,14 +287,6 @@ PRIVATE FUNCTIONS (not for import usage):
         -task : resets the database. Wipes all table data and re-initializes all tables
         -uses sqlFileToCommands()
         
-    getPostInfo(int post_id): 
-        -returns tuple of all post information
-        -tuple format: ( post_id, poster, song_title, artist, song_link, image_link, caption, ptime ) 
-    
-    __getUserInfo(string username):
-        -returns a tuple of all user information
-        -return tuple format: ( first_name, last_name, username, password, email, admin_status, block_status )
-            
     __queryCommit(string query , tuple data):
         -connects to database to then run SQL query then commit changes
         -returns nothing
@@ -309,6 +299,26 @@ PRIVATE FUNCTIONS (not for import usage):
     __queryArray(string query , tuple data):
         -connects to database to then run SQL query
         -returns array of tuples
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    OLD_DATABASE INFO: 
+    url : mysql://be3c5020bf5627:3bfc3cfa@us-cdbr-east-04.cleardb.com/heroku_f7729a769a3bca5?reconnect=true
+    username : be3c5020bf5627
+    password : 3bfc3cfa
+    hostname : us-cdbr-east-04.cleardb.com
+    database : heroku_f7729a769a3bca5
     
 
 

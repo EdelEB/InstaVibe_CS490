@@ -129,11 +129,11 @@ def addUser(fname, lname, username, password, email, isAdmin):
         
         __queryCommit(query , user_data); 
 
-def addPost(poster, song_title, artist, song_link, image, caption):
+def addPost(poster, song_title, artist, song_link, image, caption, lyric_link):
         
-        query = 'INSERT INTO POST(poster, song_title, artist, song_link, image, caption, ptime ) VALUES(%s, %s, %s, %s, %s, %s, %s);'
+        query = 'INSERT INTO POST(poster, song_title, artist, song_link, image, caption, ptime, lyric_link ) VALUES(%s, %s, %s, %s, %s, %s, %s, %s);'
         post_time =  str(datetime.now())[:19]           #gets current time
-        data = ( poster, song_title, artist, song_link, image, caption, post_time )
+        data = ( poster, song_title, artist, song_link, image, caption, post_time, lyric_link )
         __queryCommit(query, data)
 
 
@@ -298,6 +298,9 @@ def getSongLink(post_id) :
         
 def getImageLink(post_id) : 
         return getPostInfo(post_id)[5];
+        
+def getLyricLink(post_id) : 
+        return getPostInfo(post_id)[8];
         
 
 
