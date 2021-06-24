@@ -24,12 +24,15 @@
 						<img src="/static/images/instavibe_no_text.png" class="brand_logo" alt="Logo">
 					</div>
 					<div class="d-flex justify-content-center mt-3 login_container">
-						<h6 style="text-align:center">The User Account has been Banned</h6>
-						</div>
+						<h6 style="text-align:center">The User Account {{selected_user}} has been Banned</h6>
+					</div>
+				</div>
+			</div>
+				<form action="/admin_page" method= "POST">
+					<input type="hidden" name='current_user' value={{user}}> 
+					<button name="button" class="btn login_btn" type = "submit" value = "">Return</button>
+				</form>
+		</div>
 </div>
-</div>
-<form action="/user_page" name="form1" method="get" action="user.html">
-	<button class="btn home_btn"><i class="fa fa-home"></i></button>
-
 
 </html>

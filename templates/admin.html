@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <header>
 	<link rel="stylesheet" href={{ url_for( 'static', filename='adminpage.css' )}} />
+  <title>InstaVibe: Show Your Sound</title>
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -29,10 +30,10 @@
 					<button name="chat_button" type="submit" class="btn profile-edit-btn" style="float: left">Create User Account</button>
 	      </form>
 	       
-	      <form action="/chat_list" method="POST">
-	      	<input type="hidden" name='current_user' value={{user}}> 
-					<button name="chat_button" type="submit" class="btn profile-edit-btn" style="float: left">Direct Chat</button>
-	      </form>
+	      <form action = "/disable" method = "POST">
+					<input type="hidden" name='current_user' value={{user}}> 
+					<button button name="button" type = "submit" value = "Disable" class="btn profile-edit-btn">Disable User</button>
+			</form>
 	    </div>
 		
 
@@ -59,9 +60,10 @@
 				<form action = "/create_post" method = "POST">
 					<button button name="button" type = "submit" value = "Create" class="btn profile-edit-btn">Create Post</button>
 				</form>
-				
-				<form action = "/disable" method = "POST">
-					<button button name="button" type = "submit" value = "Disable" class="btn profile-edit-btn">Disable User</button>
+				<br>
+				<form action="/chat_list" method="POST">
+					<input type="hidden" name='current_user' value={{user}}> 
+					<button button name="chat_button" type="submit" class="btn profile-edit-btn">Direct Chat</button>
 				</form>
 
 			</div>

@@ -25,26 +25,22 @@
 					</div>
 					
 				</div>
-				
-
-
 				<div class="d-flex justify-content-center form_container">
-					<form action = "/post" method = "POST">
+					<form action = "/disable_confirmation" method = "POST">
+						<input type="hidden" name='current_user' value={{user}}> 
 						<div class="input-group mb-3">
+							<h2 style="text-align:center;">Enter User To Be Disabled</h2>
+							<br>
 							<div class="input-group-append">
 								<span class="input-group-text"><i class="fas fa-user"></i></span>
 							</div>
-							<input type="text" name="image_link" class="form-control input_user" value="" placeholder="Username">
+							<input type="text" name="selected_user" class="form-control input_user" value="" placeholder="Username">
+							<br>
+							<button name="disable_button" type="submit" class="btn login_btn">Disable</button>
 						</div>
-
-                        <div class="d-flex justify-content-center mt-3 login_container">
-						  
-                            <form action="/disable_confirmation" method="POST">
-                                <input type="hidden" name='selected_user' value="selected_user"> 
-                                      <button name="disable_button" type="submit">Disable</button>
-                            </form>	
-						
-                           </form>
+				</div>
+			</div>
 		</div>
-		</div>
-		</html>
+	</div>
+</body>
+</html>

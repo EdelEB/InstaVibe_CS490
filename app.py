@@ -82,7 +82,7 @@ def search():
         else:
             post_ids = None
             post_images = None
-        return flask.render_template("user.html", 
+        return flask.render_template("visit.html", 
             user = search_user,
             ids = post_ids,
             snaps = post_images
@@ -270,56 +270,76 @@ def page():
         ids = post_ids,
         snaps = post_images
     )
+    
+@app.route("/admin_page", methods=['GET', 'POST'])
+def admin_page():
+    username = request.form['current_user']
+    post_images=[]
+    post_ids = db.getPosts(username)
+                
+    if len(post_ids) != 0:
+        # print(post_ids)
+        for post in post_ids:
+            post_images.append(db.getImageLink(post))
+        # print(post_images)
+    else:
+        post_ids = None
+        post_images = None
+    return flask.render_template("admin.html", 
+        user = username,
+        ids = post_ids,
+        snaps = post_images
+    )
 
 @app.route("/result", methods=['GET', 'POST'])
 def result():
-    artists         = ["Gorillaz", "De Staat", "Steely Dan"]
-    artists_ID      = ["3AA28KZvwAUcZuOKwyblJQ", "4rZJKub3qA5t1yYcT3qmm4", "6P7H3ai06vU1sGvdpBwDmE"]
-    num1            = random.randint(0, 2)
-    num2            = random.randint(0,9)
-    rand_artist     = artists[num1]
-    rand_artist_ID  = artists_ID[num1]
+    # artists         = ["Gorillaz", "De Staat", "Steely Dan"]
+    # artists_ID      = ["3AA28KZvwAUcZuOKwyblJQ", "4rZJKub3qA5t1yYcT3qmm4", "6P7H3ai06vU1sGvdpBwDmE"]
+    # num1            = random.randint(0, 2)
+    # num2            = random.randint(0,9)
+    # rand_artist     = artists[num1]
+    # rand_artist_ID  = artists_ID[num1]
     
-    # base URL of all Spotify API endpoints
-    BASE_URL = 'https://api.spotify.com/v1/artists/{}/top-tracks?market=US'.format(rand_artist_ID)
-    # print(BASE_URL)
+    # # base URL of all Spotify API endpoints
+    # BASE_URL = 'https://api.spotify.com/v1/artists/{}/top-tracks?market=US'.format(rand_artist_ID)
+    # # print(BASE_URL)
         
-    # actual GET request with proper header
-    # song name, song artist, song-related image, song preview URL
-    response = requests.get(BASE_URL, headers=headers)
-    data     = response.json()
-    # print(data)
-    song_link   = data['tracks'][num2]['id']
-    song_name   = data['tracks'][num2]['name']
-    artist_name = data['tracks'][num2]['artists'][0]['name']
-    preview     = data['tracks'][num2]['preview_url']
-    song_image  = data['tracks'][num2]['album']['images'][0]['url']
+    # # actual GET request with proper header
+    # # song name, song artist, song-related image, song preview URL
+    # response = requests.get(BASE_URL, headers=headers)
+    # data     = response.json()
+    # # print(data)
+    # song_link   = data['tracks'][num2]['id']
+    # song_name   = data['tracks'][num2]['name']
+    # artist_name = data['tracks'][num2]['artists'][0]['name']
+    # preview     = data['tracks'][num2]['preview_url']
+    # song_image  = data['tracks'][num2]['album']['images'][0]['url']
     
-    BASE_URL     = 'https://api.spotify.com/v1/artists/{}'.format(rand_artist_ID)
-    response     = requests.get(BASE_URL, headers=headers)
-    data         = response.json()
-    artist_image = data['images'][0]['url']
+    # BASE_URL     = 'https://api.spotify.com/v1/artists/{}'.format(rand_artist_ID)
+    # response     = requests.get(BASE_URL, headers=headers)
+    # data         = response.json()
+    # artist_image = data['images'][0]['url']
     
-    GENIUS_token = os.environ['GENIUS_ACCESS']
-    GENIUS_URL   = 'https://api.genius.com'
+    # GENIUS_token = os.environ['GENIUS_ACCESS']
+    # GENIUS_URL   = 'https://api.genius.com'
     
-    song_lookup = (artist_name + "-" + song_name).replace(" ", "-")
-    # print(song_lookup)
+    # song_lookup = (artist_name + "-" + song_name).replace(" ", "-")
+    # # print(song_lookup)
     
-    path = 'search/'
-    request_uri = '/'.join([GENIUS_URL, path])
-    # print(request_uri + song_lookup)
+    # path = 'search/'
+    # request_uri = '/'.join([GENIUS_URL, path])
+    # # print(request_uri + song_lookup)
     
-    params = {'q': song_lookup}
+    # params = {'q': song_lookup}
     
-    token    = 'Bearer {}'.format(GENIUS_token)
-    headers2 = {'Authorization': token}
+    # token    = 'Bearer {}'.format(GENIUS_token)
+    # headers2 = {'Authorization': token}
     
-    response = requests.get(request_uri, params=params, headers=headers2)
-    data     = response.json()
-    # print(data)
-    # print(data['response']['hits'][0]['result']['url'])
-    lyrics_url = data['response']['hits'][0]['result']['url']
+    # response = requests.get(request_uri, params=params, headers=headers2)
+    # data     = response.json()
+    # # print(data)
+    # # print(data['response']['hits'][0]['result']['url'])
+    # lyrics_url = data['response']['hits'][0]['result']['url']
     
     global username
     username = request.form["username"]
@@ -348,15 +368,21 @@ def result():
                         snaps = post_images
                     )
                 elif db.getAdminStatus(username) == 1: # If login is admin
+                    post_ids = db.getPosts(username)
+                    
+                    if len(post_ids) != 0:
+                        # print(post_ids)
+                        for post in post_ids:
+                            post_images.append(db.getImageLink(post))
+                        # print(post_images)
+                    else:
+                        post_ids = None
+                        post_images = None
+                        
                     return flask.render_template("admin.html", 
-                        song_url = song_link,
-                        song = song_name,
-                        name = artist_name,
-                        song_preview = preview,
-                        image_url = song_image,
-                        artist_img = artist_image,
-                        song_lyrics = lyrics_url,
-                        user = username
+                        user = username,
+                        ids = post_ids,
+                        snaps = post_images
                     )
         else: # If login is invalid
             return flask.render_template("attempt.html")
@@ -385,20 +411,39 @@ def admin_create():
     else: # Create admin
         db.addUser('NULL', 'NULL', create_username, password, 'NULL', 1)
     
-    return flask.render_template("admin.html",
-        user = username)
+    post_images=[]
+    post_ids = db.getPosts(username)
+                    
+    if len(post_ids) != 0:
+        # print(post_ids)
+        for post in post_ids:
+            post_images.append(db.getImageLink(post))
+        # print(post_images)
+    else:
+        post_ids = None
+        post_images = None
+        
+    return flask.render_template("admin.html", 
+        user = username,
+        ids = post_ids,
+        snaps = post_images
+    )
 
 @app.route("/disable", methods=['GET', 'POST'])
 def disable_function():
-        return render_template("disable.html"
+    username = request.form['current_user']
+    return render_template("disable.html",
+        user = username
         );
         
 @app.route("/disable_confirmation", methods=['GET', 'POST'])
 def disable_confirmation():
+    username = request.form['current_user']
     selected_user   = request.form["selected_user"]
     db.setBlockStatus(selected_user, 1)
     return render_template("disable_confirmation.html",
-            selected_user = selected_user
+            selected_user = selected_user,
+            user = username
             );
 
 

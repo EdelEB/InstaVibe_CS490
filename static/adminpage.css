@@ -440,8 +440,8 @@ font-size: 17px;
 }
   h2 { 
     font-size: 2em;
-    margin-top: -85px;
-    margin-right: 70px;
+    margin-top: -65px;
+    margin-right: 120px;
     color:rgb(236, 39, 13);
     font-weight: bold;
     border-radius: 2px;
@@ -454,7 +454,7 @@ font-size: 17px;
 
 
   .topnav {
-    background-color: rgb(194, 115, 115);
+    background-color: #1DB954;
     overflow: hidden;
   }
   

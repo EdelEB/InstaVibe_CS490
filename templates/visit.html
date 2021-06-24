@@ -1,31 +1,78 @@
 <!DOCTYPE html>
-<html>
+<header>
+	<link rel="stylesheet" href={{ url_for( 'static', filename='user.css' )}} />
+	<div class="topnav">
+	<title>InstaVibe: Show Your Sound</title>
+</div>
+	<form action = "/search" method = "POST">
+		<div class="input-group mb-3">
+			<div class="input-group-append">
+				<span class="input-group-text"><i class="fas fa-user"></i></span>
+			</div>
+			<input type="text" name="searched_user" class="form-control input_user" value="" placeholder="Search...">
+			<button name="button" class="btn profile-edit-btn" type = "search" value = "Search">Search</button>
+		</div>
+	</form>
+	
+	<div class="container">
 
-<head>
-    <link rel="stylesheet" href={{ url_for( 'static', filename='user.css' ) }} />
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
-</head>
+		<div class="profile">
 
-<body> 
-    <div style="text-align:center">
-        <h1>USER</h1>
-        <h1>{{song}}</h1>
-        <h3>By: {{name}}</h3>
-        <img src={{artist_img}} height="100px" width="100px" class="circle">
-        <br>
-        <img src={{image_url}} height="300px" width="300px" class="rounded"> 
-    </div>
+			<div class="profile-image">
+
+				<img src="https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg" alt="">
+
+			</div>
+
+			<div class="profile-user-settings">
+
+				<h1 class="profile-user-name">{{user}}</h1>
+
+			</div>
+
+			<div class="profile-bio">
+
+				<p><span class="profile-real-name">{{username}}</span> 🎵  Show Your Sound! 🎵️</p>
+
+			</div>
+
+		</div>
+		<!-- End of profile section -->
+
+	</div>
+	<!-- End of container -->
+
+</header>
+
+<main>
     <br>
-    <div class='audio-container'>
-        <audio controls>
-          <source src={{song_preview}} type="audio/mpeg">
-        </audio>
-    </div>
-    <div style="text-align:center">
-        <a style="font-size: 12px" href={{song_lyrics}}>Click here to see the lyrics!</a>
-    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <button name="button" class="btn back_btn" type = "submit" value = "back" onClick="window.history.go(-1);" style="float:left">Back</button>
+	<div class="container">
 
-</body>
+		<div class="gallery">
+			{% if ids != None %}
+				{% for post_id in ids %}
+				    <form action = "/view_post" method = "POST">
+		                <div class="gallery-item" tabindex="0">
+		                	<input type="hidden" name='post_id' class="form-control input_pass" value={{ids[loop.index0]}}>
+							<input type="image" src="{{snaps[loop.index0]}}" class="gallery-image" name='image'>
+						</div>
+					</form>
+					<br>
+					<br>
+	            {% endfor %}
+            {% endif %}
+            
+            <form action="/login" name="form1" method="post" action="login.html">
+				<label class="logoutLblPos">
+				<input name="submit2" type="submit" id="submit2" value="Log out" class="btn profile-edit-btn" >
+				</label>
+			  </form>
 
-</html>
+		</div>
+
+</main>
