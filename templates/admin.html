@@ -8,24 +8,33 @@
 </div>
 	<form action = "/search" method = "POST">
 		<div class="input-group mb-3">
-			<div class="input-group-append">
-				<span class="input-group-text"><i class="fas fa-user"></i></span>
-			</div>
 			<input type="text" name="searched_user" class="form-control input_user" value="" placeholder="Search...">
+			<button name="button" class="btn profile-edit-btn" type = "search" value = "Search">Search</button>
 		</div>
-		<button name="button" class="btn login_btn" type = "search" value = "Search">Search</button>
+		
 	</form>
 
   <body>
-    <div class="topnav" id="myTopnav">
-      <a href="community" class="">Community Guidelines</a>
-      <a href="create_post">Create Post</a>
-      <a href="register">Create User Account</a>
-      <a href="#disableuseraccount">Disable User Account</a>  
-      <a href="chat_list">Chat</a>
-      </a>
-    </div>
-
+  	
+  		<input type="hidden" name='current_user' value={{user}}> 
+  	
+	    <div class="topnav" id="myTopnav">
+	      <form action="/community" method="POST">
+	      	<input type="hidden" name='current_user' value={{user}}> 
+					<button name="chat_button" type="submit" class="btn profile-edit-btn" style="float: left">Community Guidelines</button>
+	      </form>
+	      
+	      <form action="/admin_register" method="POST">
+	      	<input type="hidden" name='current_user' value={{user}}> 
+					<button name="chat_button" type="submit" class="btn profile-edit-btn" style="float: left">Create User Account</button>
+	      </form>
+	       
+	      <form action="/chat_list" method="POST">
+	      	<input type="hidden" name='current_user' value={{user}}> 
+					<button name="chat_button" type="submit" class="btn profile-edit-btn" style="float: left">Direct Chat</button>
+	      </form>
+	    </div>
+		
 
     <div style="text-align:center">
       <h2>ADMIN</h2>
@@ -49,6 +58,10 @@
 				<h1 class="profile-user-name">{{user}}</h1>
 				<form action = "/create_post" method = "POST">
 					<button button name="button" type = "submit" value = "Create" class="btn profile-edit-btn">Create Post</button>
+				</form>
+				
+				<form action = "/disable" method = "POST">
+					<button button name="button" type = "submit" value = "Disable" class="btn profile-edit-btn">Disable User</button>
 				</form>
 
 			</div>
@@ -87,7 +100,7 @@
             
             <form action="/login" name="form1" method="post" action="login.html">
 				<label class="logoutLblPos">
-				<input name="submit2" type="submit" id="submit2" value="Log out">
+				<input name="submit2" type="submit" id="submit2" value="Log out" class="btn profile-edit-btn">
 				</label>
 			  </form>
 

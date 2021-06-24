@@ -1,22 +1,28 @@
 <html>
+
 <head>
     <title>{{user1}}'s Chats</title>
+	<link rel="stylesheet" href={{ url_for( 'static', filename='user.css' )}} />
+    <meta id="current_user" value={{user1}}>
 </head>
 <body align="center">
-    <h2>{{user1}}'s Chats</h2>
+	<img src="/static/images/instavibe_no_text.png" class="brand_logo" alt="Logo" style = 'text-align: center; margin:auto;'>
+	<br>
+    <h1>{{user1}}'s Chats</h1>
+    <br>
     
     <form action="/new_chat" method="POST">
         <input type="hidden" name='current_user' value={{user1}}> 
         <input type=text name='searched_user' placeholder="Search User..."></input>
-        <button type="submit">Start Conversation</button>
+        <button type="submit" class="btn profile-edit-btn">Start New Conversation</button>
     </form>
+    <br>
     
     <div id="chats">
         {% if chat_users != None %}
 				{% for user2 in chat_users %}
 				    <form action="/chat" method="POST">
-		                    {{chat_users[loop.index0]}}
-		                    <button type="submit">Chat Now</button>
+		                    <button type="submit" class="btn profile-edit-btn">Direct Chat With {{chat_users[loop.index0]}}</button>
 		                    <input type="hidden" name='user2' value={{chat_users[loop.index0]}}>    <!-- passed to chat.html -->
 		                    <input type="hidden" name='user1' value={{user1}}>                      <!-- passed to chat.html -->
 					</form>
@@ -25,6 +31,33 @@
         {% endif %}
             
     </div>
+
+    <!--
+
+    <script type="text/javascript">
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
     
+        socket.on( 'chat_added', function( chat_info ){
+            console.log(chat_info);
+            
+            if( chat_info.user1 == document.getElementById("current_user")){
+                
+                document.getElementById("chats").innerHTML = 
+                    document.getElementById("chats").innerHTML + 
+                        `<form action="/chat" method="POST">
+        		                    <button type="submit" class="btn profile-edit-btn">Direct Chat With ${chat_info.user2}</button>
+        		                    <input type="hidden" name='user2' value=${chat_info.user2}>   
+        		                    <input type="hidden" name='user1' value={{user1}}>
+        				</form><br>`;
+                    
+                return;
+            }
+        })
+        
+    </script>
+    
+    -->
+
 </body>
+
 </html>

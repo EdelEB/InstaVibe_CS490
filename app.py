@@ -133,8 +133,10 @@ def post():
     artist_name = data['tracks']['items'][0]['artists'][0]['name']
     track       = data['tracks']['items'][0]['name']
     preview     = data['tracks']['items'][0]['preview_url']
+    if preview == None:
+        preview = 'https://p.scdn.co/mp3-preview/b6f62ea05880c8fb58ff61f4d14a69a8a2f0cd73?cid=0a1cc09ac24240588678a1a1f217f200'
     album       = data['tracks']['items'][0]['album']['images'][0]['url']
-    
+    print(preview)
     GENIUS_token = os.environ['GENIUS_ACCESS']
     GENIUS_URL   = 'https://api.genius.com'
     
@@ -154,7 +156,10 @@ def post():
     data = response.json()
     # print(data)
     # print(data['response']['hits'][0]['result']['url'])
-    lyrics_url = data['response']['hits'][0]['result']['url']
+    try:
+        lyrics_url = data['response']['hits'][0]['result']['url']
+    except IndexError:
+        lyrics_url = 'https://genius.com/search?q=does%20not%20exist'
     db.addPost(username, track, artist_name, preview, image, cap, lyrics_url)
     
     return flask.render_template("post.html",
@@ -322,71 +327,134 @@ def result():
     post_images=[]
     if db.usernameTaken(username):
         if db.getPassword(username) == password:
-            if db.getAdminStatus(username) == 0: # If login is user
-                
-                post_ids = db.getPosts(username)
-                
-                if len(post_ids) != 0:
-                    # print(post_ids)
-                    for post in post_ids:
-                        post_images.append(db.getImageLink(post))
-                    # print(post_images)
-                else:
-                    post_ids = None
-                    post_images = None
-                return flask.render_template("user.html", 
-                    user = username,
-                    ids = post_ids,
-                    snaps = post_images
-                )
-            elif db.getAdminStatus(username) == 1: # If login is admin
-                return flask.render_template("admin.html", 
-                    song_url = song_link,
-                    song = song_name,
-                    name = artist_name,
-                    song_preview = preview,
-                    image_url = song_image,
-                    artist_img = artist_image,
-                    song_lyrics = lyrics_url,
-                    user = username
-                )
+            if db.getBlockStatus(username) == 1:
+                return flask.render_template("user_disabled.html")
+            else:
+                if db.getAdminStatus(username) == 0: # If login is user
+                    
+                    post_ids = db.getPosts(username)
+                    
+                    if len(post_ids) != 0:
+                        # print(post_ids)
+                        for post in post_ids:
+                            post_images.append(db.getImageLink(post))
+                        # print(post_images)
+                    else:
+                        post_ids = None
+                        post_images = None
+                    return flask.render_template("user.html", 
+                        user = username,
+                        ids = post_ids,
+                        snaps = post_images
+                    )
+                elif db.getAdminStatus(username) == 1: # If login is admin
+                    return flask.render_template("admin.html", 
+                        song_url = song_link,
+                        song = song_name,
+                        name = artist_name,
+                        song_preview = preview,
+                        image_url = song_image,
+                        artist_img = artist_image,
+                        song_lyrics = lyrics_url,
+                        user = username
+                    )
         else: # If login is invalid
             return flask.render_template("attempt.html")
     else: # If login is invalid
         return flask.render_template("attempt.html")
+        
+        
+@app.route("/admin_register", methods=['GET', 'POST'])
+def admin_register():
+        username = request.form['current_user']
+        return flask.render_template("admin_register.html",
+        user = username)
+
+@app.route("/admin_create", methods=['GET', 'POST'])
+def admin_create():
+    username = request.form['username']
+    create_username = request.form["create_username"]
+    password = request.form["password"]
+    try:
+        admin_stat = request.form['admin_stat']
+    except KeyError:
+        admin_stat = 0
+    
+    if admin_stat == 0: # Create user
+        db.addUser('NULL', 'NULL', create_username, password, 'NULL', 0)
+    else: # Create admin
+        db.addUser('NULL', 'NULL', create_username, password, 'NULL', 1)
+    
+    return flask.render_template("admin.html",
+        user = username)
+
+@app.route("/disable", methods=['GET', 'POST'])
+def disable_function():
+        return render_template("disable.html"
+        );
+        
+@app.route("/disable_confirmation", methods=['GET', 'POST'])
+def disable_confirmation():
+    selected_user   = request.form["selected_user"]
+    db.setBlockStatus(selected_user, 1)
+    return render_template("disable_confirmation.html",
+            selected_user = selected_user
+            );
 
 
+@app.route("/register_admin", methods=['GET', 'POST'])
+def register_admin():
+        return render_template("register_admin.html"
+        );
+
+@app.route("/community", methods=['GET', 'POST'])
+def community():
+        return render_template("community.html"
+        );
 
 @app.route("/chat_list", methods=['GET', 'POST'])
 def list_chats():
-    convo_arr = db.getConvos(username);
+    user1   = request.form["current_user"]; 
+    
+    convo_arr = db.getConvos(user1);
     chat_users = [];
      #creates an array of usernames that the user has conversations with already
     for tup in convo_arr:              #tup = (user1, user2)
-        if tup[0] == username:
+        if tup[0] == user1:
             chat_users.append(tup[1]);
         else:
             chat_users.append(tup[0]);
     
     return render_template("chat_list.html",
-            user1       = username,
+            user1       = user1,
             chat_users  = chat_users
             );
     
 
+
 @app.route("/new_chat", methods=['GET', 'POST']) 
 def create_chat():
     
-    user1   = request.form["current_user"]; ####### This is saying it can't find "current_user" in the HTML ####### It is on line 9 of chat_list #######################################################
+    user1   = request.form["current_user"]; 
     user2   = request.form["searched_user"];
     convo_id = db.getConvoId(user1, user2)
     message_arr   = [];
     
     if convo_id == -1:
         db.addConvo(user1, user2);
-        convo_id = db.getConvoId(user1, user2)
+        '''
+        convo_id = db.getConvoId(user1, user2);
+        dictionary = {
+            "user1" : user1,
+            "user2" : user2,
+            "convo_id" : convo_id
+            }
+        json_var = json.dumps(dictionary);
+        
+        socketio.emit("chat_added", json_var);
+        '''
     else: # I know this is duplicated code from view_chat(). I just want this to work right now
-        message_tuples = db.getMessagesTuples(convo_id);
+        message_tuples = db.getMessageTuples(convo_id);
         #initializes return array           
         #tuples(msg_id, convo_id, sender, receiver, message, mtime, is_read)
         for tup in message_tuples:
@@ -407,7 +475,7 @@ def view_chat():
     user1       = request.form["user1"];
     user2       = request.form["user2"];
     convo_id    = db.getConvoId(user1, user2);
-    message_tuples = db.getMessagesTuples(convo_id);
+    message_tuples = db.getMessageTuples(convo_id);
     message_arr   = [];
     
     #initializes return array           

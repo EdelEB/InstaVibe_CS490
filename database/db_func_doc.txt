@@ -8,8 +8,6 @@ DATABASE INFO:
     hostname : us-cdbr-east-04.cleardb.com
     database : heroku_3c9e97a749311b6
 
-?reconnect=true
-
     
 ENTITIES & ATTRIBUTES:
     Comment:
@@ -176,6 +174,10 @@ PUBLIC FUNCTIONS (for use when db_func is imported):
         
             getMessages(int convo_id):
                 -returns array of message_id's
+                
+            getMessageTuples(int convo_id):
+                -return array of tuples 
+                    tuple : (msg_id, convo_id, sender, receiver, message, mtime, is_read)
         
         MESSAGE: 
             
@@ -298,8 +300,11 @@ PRIVATE FUNCTIONS (not for import usage):
 
     __queryArray(string query , tuple data):
         -connects to database to then run SQL query
-        -returns array of tuples
+        -returns array of tuple[0]
     
+    __queryTupleArray(string query , tuple data):
+        -connects to database to then run SQL query
+        -returns array of tuples
     
     
     

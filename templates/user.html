@@ -9,8 +9,9 @@
 				<span class="input-group-text"><i class="fas fa-user"></i></span>
 			</div>
 			<input type="text" name="searched_user" class="form-control input_user" value="" placeholder="Search...">
+			<button name="button" class="btn profile-edit-btn" type = "search" value = "Search">Search</button>
 		</div>
-		<button name="button" class="btn login_btn" type = "search" value = "Search">Search</button>
+		
 	</form>
 	<div class="container">
 
@@ -31,6 +32,7 @@
 				</form>
 				<br>
 				<form action="/chat_list" method="POST">
+					<input type="hidden" name='current_user' value={{user}}> 
 					<button button name="chat_button" type="submit" class="btn profile-edit-btn">Direct Chat</button>
 				</form>
 
@@ -70,7 +72,7 @@
             
             <form action="/login" name="form1" method="post" action="login.html">
 				<label class="logoutLblPos">
-				<input name="submit2" type="submit" id="submit2" value="Log out">
+				<input name="submit2" type="submit" id="submit2" value="Log out" class="btn profile-edit-btn" >
 				</label>
 			  </form>
 

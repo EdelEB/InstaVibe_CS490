@@ -238,7 +238,7 @@ def getMessages(convo_id):
         
         return array;
 
-def getMessagesTuples(convo_id):
+def getMessageTuples(convo_id):
         query = 'SELECT * FROM MESSAGE WHERE convo_id = ' +str(convo_id)+ ' ORDER BY mtime';
         array = __queryTupleArray(query, "");
         
