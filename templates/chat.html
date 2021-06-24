@@ -6,8 +6,9 @@
     <meta id="message_arr" value={{message_arr}}>
     <link rel="stylesheet" href={{ url_for( 'static', filename='user.css' )}} />
 </head>
-
+<button name="button" class="btn back_btn3" type = "submit" value = "back" onClick="window.history.go(-1);">Back</button>
 <body align="center">
+    
     <h2>{{user1}} Chatting with {{user2}}</h2>
 
     <div id="message_div">
@@ -19,7 +20,7 @@
             {% endfor %}
         {% endif %}
     </div>
-
+    
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
     <script type="text/javascript">
@@ -69,7 +70,10 @@
         })
 
     </script>
-
+    <button name="button" class="btn back_btn3" type = "submit" value = "back" onClick="window.history.go(-1);" style = 'position: fixed;
+    bottom: 90%;
+    right: 0px; '>Back</button>
+    
     <form action="" method="POST">
         <input type="text" class="message" placeholder="Messages"/>
         <button class="btn profile-edit-btn" type="submit"/>Send Message</button>
