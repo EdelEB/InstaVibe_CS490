@@ -82,3 +82,11 @@ for x in array :
 #print(db.getText('c' , 5 ));
 
 #print(db.getCreator('p', 25) );
+
+#print(db.getConvos("OG"));
+
+#arr = db.getMessagesTuples(5);
+#for tup in arr:
+#    print(tup);
+
+print(db.getConvoId("EdelB", "Rocketman"));

@@ -25,8 +25,13 @@
 			<div class="profile-user-settings">
 
 				<h1 class="profile-user-name">{{user}}</h1>
-				<form action = "/create_post" method = "POST">
-					<button button name="button" type = "submit" value = "Create" class="btn profile-edit-btn">Create Post</button>
+				
+				<form action="/create_post" method = "POST">
+					<button button name="button" type="submit" value="Create" class="btn profile-edit-btn">Create Post</button>
+				</form>
+				<br>
+				<form action="/chat_list" method="POST">
+					<button button name="chat_button" type="submit" class="btn profile-edit-btn">Direct Chat</button>
 				</form>
 
 			</div>

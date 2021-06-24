@@ -1,32 +1,96 @@
 <!DOCTYPE html>
-<html>
+<header>
+	<link rel="stylesheet" href={{ url_for( 'static', filename='adminpage.css' )}} />
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<div class="topnav">
+</div>
+	<form action = "/search" method = "POST">
+		<div class="input-group mb-3">
+			<div class="input-group-append">
+				<span class="input-group-text"><i class="fas fa-user"></i></span>
+			</div>
+			<input type="text" name="searched_user" class="form-control input_user" value="" placeholder="Search...">
+		</div>
+		<button name="button" class="btn login_btn" type = "search" value = "Search">Search</button>
+	</form>
 
-<head>
-    <title>InstaVibe: Show Your Sound</title>
-    <link rel="stylesheet" href={{ url_for( 'static', filename='admin.css' ) }} />
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
-</head>
+  <body>
+    <div class="topnav" id="myTopnav">
+      <a href="community" class="">Community Guidelines</a>
+      <a href="create_post">Create Post</a>
+      <a href="register">Create User Account</a>
+      <a href="#disableuseraccount">Disable User Account</a>  
+      <a href="chat_list">Chat</a>
+      </a>
+    </div>
 
-<body> 
+
     <div style="text-align:center">
-        <h1>ADMIN</h1>
-        <h1>{{song}}</h1>
-        <h3>By: {{name}}</h3>
-        <img src={{artist_img}} height="100px" width="100px" class="circle">
-        <br>
-        <img src={{image_url}} height="300px" width="300px" class="rounded"> 
-    </div>
-    <br>
-    <div class='audio-container'>
-        <audio controls>
-          <source src={{song_preview}} type="audio/mpeg">
-        </audio>
-    </div>
-    <div style="text-align:center">
-        <a style="font-size: 12px" href={{song_lyrics}}>Click here to see the lyrics!</a>
-    </div>
+      <h2>ADMIN</h2>
+      </div>
 
-</body>
+  </body>
 
-</html>
+
+	<div class="container">
+
+		<div class="profile">
+
+			<div class="profile-image">
+
+				<img src="https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg" alt="">
+
+			</div>
+
+			<div class="profile-user-settings">
+
+				<h1 class="profile-user-name">{{user}}</h1>
+				<form action = "/create_post" method = "POST">
+					<button button name="button" type = "submit" value = "Create" class="btn profile-edit-btn">Create Post</button>
+				</form>
+
+			</div>
+
+			<div class="profile-bio">
+
+				<p><span class="profile-real-name">{{username}}</span> 🎵  Instavibe Administrator 🎵️</p>
+
+			</div>
+
+		</div>
+		<!-- End of profile section -->
+
+	</div>
+	<!-- End of container -->
+
+</header>
+
+<main>
+
+	<div class="container">
+
+		<div class="gallery">
+			{% if ids != None %}
+				{% for post_id in ids %}
+				    <form action = "/view_post" method = "POST">
+		                <div class="gallery-item" tabindex="0">
+		                	<input type="hidden" name='post_id' class="form-control input_pass" value={{ids[loop.index0]}}>
+							<input type="image" src="{{snaps[loop.index0]}}" class="gallery-image" name='image'>
+						</div>
+					</form>
+					<br>
+					<br>
+	            {% endfor %}
+            {% endif %}
+            
+            <form action="/login" name="form1" method="post" action="login.html">
+				<label class="logoutLblPos">
+				<input name="submit2" type="submit" id="submit2" value="Log out">
+				</label>
+			  </form>
+
+		</div>
+
+</main>

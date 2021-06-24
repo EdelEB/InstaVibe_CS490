@@ -96,6 +96,18 @@ def __queryArray(query, data):
                 
         return array
 
+def __queryTupleArray(query, data):
+        db_con = __connector()
+        myCursor = db_con.cursor()
+        array = [];
+        
+        myCursor.execute(query, data)
+        for x in myCursor:     
+                array.append(x)
+        db_con.close()
+        myCursor.close()
+                
+        return array
 
         
 def addComment(sender, post_id, message):
@@ -162,6 +174,7 @@ def anyNewMessages(convo_id):
         query = 'SELECT new_message FROM CONVERSATION WHERE convo_id = %s;';
         return __queryTuple(query, convo_id);
 
+
 def getUserInfo(username): #return tuple : ( fname, lname, username, pswrd, email, admin?, blocked? )
         query = 'SELECT * FROM USER WHERE username = "'+username+'";'
         return __queryTuple(query, "" )
@@ -202,9 +215,9 @@ def getComments(post_id):
         return array;
         
 def getConvos(user):
-        query = 'SELECT convo_id FROM CONVERSATION WHERE (user1 = %s OR user2 = %s);';
+        query = 'SELECT user1, user2 FROM CONVERSATION WHERE (user1 = %s OR user2 = %s);';
         values = ( user, user );
-        array = __queryArray(query, values);
+        array = __queryTupleArray(query, values);
         
         return array;
         
@@ -212,15 +225,24 @@ def getConvoId(user1, user2):
         query = 'SELECT convo_id FROM CONVERSATION WHERE (user1 = %s AND user2 = %s) OR (user1 = %s AND user2 = %s);';
         values = (user1, user2, user2, user1);
         
-        return __queryTuple(query, values)[0];
+        ret = __queryTuple(query, values);
         
+        try:
+                return ret[0];
+        except:
+                return -1; # no convo exists
         
 def getMessages(convo_id):
-        query = 'SELECT msg_id FROM Message WHERE convo_id = %s ORDER BY mtime';
-        array = __queryArray(query, (convo_id) );
+        query = 'SELECT msg_id FROM MESSAGE WHERE convo_id = ' +str(convo_id)+ ' ORDER BY mtime';
+        array = __queryArray(query, "");
         
         return array;
 
+def getMessagesTuples(convo_id):
+        query = 'SELECT * FROM MESSAGE WHERE convo_id = ' +str(convo_id)+ ' ORDER BY mtime';
+        array = __queryTupleArray(query, "");
+        
+        return array;
         
 def getPosts(username):
         query = 'SELECT post_id FROM POST WHERE poster = "'+username+'" ORDER BY ptime;';

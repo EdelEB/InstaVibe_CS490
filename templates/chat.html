@@ -1,37 +1,78 @@
 <html>
 <head>
+    <title>Chat with {{user2}}</title>
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta id="convo_id" value={{convo_id}}> <!-- allows for reference in js -->
+    <meta id="message_arr" value={{message_arr}}>
+</head>
 
-</head>    
+<body align="center">
+    <h2>{{user1}} Chatting with {{user2}}</h2>
 
-<body>
-    <div> 
-        {% if ids != None %}
-				{% for message in message_array %}
-				    <form action = "/chat" method = "POST">
-		                <div class="gallery-item" tabindex="0">
-		                	<h2>{{ids[loop.index0]}}</h2>
-							<form action = "/create_post" method = "POST">
-								<input type="text" name="message" class="form-control input_pass" value="" placeholder="Type here!">
-								<button button name="button" type = "submit" value = "Send" class="btn profile-edit-btn">Send Message</button>
-							</form>
-						</div>
-					</form>
-					<br>
-					<br>
-	               {% endfor %}
+    <div id="message_div">
+    
+        {% if message_arr != None %}
+    		{% for myStr in message_arr %}    	            
+    	            {{myStr}}
+    		    <br><br>
+            {% endfor %}
         {% endif %}
-    </div> 
-    
-    
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+    <script type="text/javascript">
         
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+    
+        socket.on( 'connect', function() {
+            /*socket.emit( 'message', {
+                connection: 'User Connected',
+                convo_id : '{{convo_id}}'
+            })*/
+            var form = $( 'form' ).on( 'submit', function( e ) {
+                
+                e.preventDefault()
+                let user_input = $('input.message').val()
+                
+                socket.emit( 'message', {      //sends message to python file in json format
+                    sender   : '{{user1}}',
+                    receiver : '{{user2}}',
+                    message  : user_input,
+                    convo_id : '{{convo_id}}'
+                })
+                
+                $( 'input.message' ).val( '' ).focus()
+            })
+        })
+        
+        socket.on( 'response', function( msg ) {
+            console.log( msg )
+            
+            //get convo_id from current room
+            var room_id = document.getElementById("convo_id").getAttribute("value");
+            //check room convo_id with message convo_id
+            if(msg.convo_id == room_id ){
+                console.log("passed id check")
+                
+                // if undefined, it is a connection event
+                if( typeof msg.message !== 'undefined' ) {
+                    //adds the new message to the page
+                    document.getElementById("message_div").innerHTML = document.getElementById("message_div").innerHTML + `${msg.sender} : ${msg.message}<br><br>` ;
+                }
+                else{
+                    console.error("Message Undefined");
+                } 
+                
+            }
+        })
+
+    </script>
+
+    <form action="" method="POST">
+        <input type="text" class="message" placeholder="Messages"/>
+        <button type="submit"/>Send Message</button>
+    </form>
 
 </body>
-
-<script>
-    while (true) {
-        
-    }
-    
-</script>
-
 </html>

@@ -1,7 +1,7 @@
 import requests
 import os
 import flask
-from flask import Flask, request, session, send_from_directory, json
+from flask import Flask, render_template, request, session, send_from_directory, json
 from dotenv import load_dotenv, find_dotenv
 import random
 import database.db_func as db
@@ -15,7 +15,6 @@ cors = CORS(app, resources={"/*": {"origins": "*"}})
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
-    json=json,
     manage_session=False
 )
 
@@ -114,19 +113,7 @@ def result2():
 def create_post():
     return flask.render_template("create_post.html")
     
-    
-    
-@app.route("/view_chat", methods=['GET', 'POST'])
-def view_chat():
-    user1   = username;
-    user2   = request.form["user2"];
-    msg_arr = [];
-    for msg_id in db.getMessages(db.getConvoId(user1, user2)):
-        msg_arr.append( db.getCreator('m', msg_id), db.getText('m', msg_id) );
-    
-    return flask.render_template("chat.html", msg_arr);
-    
-    
+
     
 @app.route("/post", methods=['GET', 'POST'])
 def post():
@@ -222,7 +209,7 @@ def add_comment():
         lyrics      = lyrics_link
     )            
                 
-                
+
                 
 @app.route("/view_post", methods=['GET', 'POST'])
 def view_post():
@@ -370,10 +357,86 @@ def result():
 
 
 
-@socketio.on('message')
-def on_message(data):
-    print(str(data));
+@app.route("/chat_list", methods=['GET', 'POST'])
+def list_chats():
+    convo_arr = db.getConvos(username);
+    chat_users = [];
+     #creates an array of usernames that the user has conversations with already
+    for tup in convo_arr:              #tup = (user1, user2)
+        if tup[0] == username:
+            chat_users.append(tup[1]);
+        else:
+            chat_users.append(tup[0]);
+    
+    return render_template("chat_list.html",
+            user1       = username,
+            chat_users  = chat_users
+            );
+    
 
+@app.route("/new_chat", methods=['GET', 'POST']) 
+def create_chat():
+    
+    user1   = request.form["current_user"]; ####### This is saying it can't find "current_user" in the HTML ####### It is on line 9 of chat_list #######################################################
+    user2   = request.form["searched_user"];
+    convo_id = db.getConvoId(user1, user2)
+    message_arr   = [];
+    
+    if convo_id == -1:
+        db.addConvo(user1, user2);
+        convo_id = db.getConvoId(user1, user2)
+    else: # I know this is duplicated code from view_chat(). I just want this to work right now
+        message_tuples = db.getMessagesTuples(convo_id);
+        #initializes return array           
+        #tuples(msg_id, convo_id, sender, receiver, message, mtime, is_read)
+        for tup in message_tuples:
+            message_arr.append( str(tup[2])+" : "+str(tup[4]) );
+    
+    return render_template("chat.html",
+            convo_id    = convo_id,
+            user1       = user1,
+            user2       = user2,
+            message_arr = message_arr
+            );
+        
+
+
+@app.route("/chat", methods=['GET', 'POST'])
+def view_chat():
+    
+    user1       = request.form["user1"];
+    user2       = request.form["user2"];
+    convo_id    = db.getConvoId(user1, user2);
+    message_tuples = db.getMessagesTuples(convo_id);
+    message_arr   = [];
+    
+    #initializes return array           
+    #tuples(msg_id, convo_id, sender, receiver, message, mtime, is_read)
+    for tup in message_tuples:
+        message_arr.append( str(tup[2])+" : "+str(tup[4]) );
+    
+    
+    return render_template("chat.html",
+            convo_id    = convo_id,
+            user1       = user1,
+            user2       = user2,
+            message_arr = message_arr
+            );
+    
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!!!')
+  
+
+@socketio.on('message')
+def on_message(json, methods=['GET', 'POST']):
+
+    #add message to database
+    db.addMessage(json["convo_id"], json["sender"], json["receiver"], json["message"] );
+
+    print('received my event: ' + str(json))
+    socketio.emit('response', json, callback=messageReceived)
+
+    
 
 
 socketio.run(
@@ -382,4 +445,5 @@ socketio.run(
     port=int(os.getenv("PORT", 8080)), 
     debug=True
 )
+
 

@@ -1,0 +1,30 @@
+<html>
+<head>
+    <title>{{user1}}'s Chats</title>
+</head>
+<body align="center">
+    <h2>{{user1}}'s Chats</h2>
+    
+    <form action="/new_chat" method="POST">
+        <input type="hidden" name='current_user' value={{user1}}> 
+        <input type=text name='searched_user' placeholder="Search User..."></input>
+        <button type="submit">Start Conversation</button>
+    </form>
+    
+    <div id="chats">
+        {% if chat_users != None %}
+				{% for user2 in chat_users %}
+				    <form action="/chat" method="POST">
+		                    {{chat_users[loop.index0]}}
+		                    <button type="submit">Chat Now</button>
+		                    <input type="hidden" name='user2' value={{chat_users[loop.index0]}}>    <!-- passed to chat.html -->
+		                    <input type="hidden" name='user1' value={{user1}}>                      <!-- passed to chat.html -->
+					</form>
+					<br>
+	        {% endfor %}
+        {% endif %}
+            
+    </div>
+    
+</body>
+</html>
