@@ -1,0 +1,13 @@
+2021-06-10 08:58:47 [ERROR]: log level: info
+2021-06-10 08:58:47 [INFO]: Retrieving AWS endpoint data
+2021-06-10 08:58:47 [INFO]: OS:  Linux x64 4.14.232-176.381.amzn2.x86_64
+2021-06-10 08:58:47 [INFO]: AWS Cloud9 Extension Host Version:  1.42.0
+2021-06-10 08:58:47 [INFO]: AWS Toolkit Version:  1.25.0-1c2c5a28c7e5
+2021-06-10 09:01:25 [INFO]: Preparing to debug locally: Lambda "app.register"
+2021-06-10 09:01:25 [INFO]: Building SAM application...
+2021-06-10 09:01:26 [INFO]: SAM CLI location: /usr/local/bin/sam
+2021-06-10 09:01:26 [INFO]: Running command: (not started) [/usr/local/bin/sam build --build-dir /tmp/aws-toolkit-vscode/vsctk918VQ3/output --template /home/ec2-user/environment/app___vsctk___template.yaml --base-dir /home/ec2-user/environment --use-container --manifest /tmp/aws-toolkit-vscode/vsctk918VQ3/debug-requirements.txt]
+2021-06-10 09:01:26 [INFO]: SAM CLI not configured, using SAM found at: '/usr/local/bin/sam'
+2021-06-10 09:01:26 [INFO]: Running: (not started) [/usr/local/bin/sam build --build-dir /tmp/aws-toolkit-vscode/vsctk918VQ3/output --template /home/ec2-user/environment/app___vsctk___template.yaml --base-dir /home/ec2-user/environment --use-container --manifest /tmp/aws-toolkit-vscode/vsctk918VQ3/debug-requirements.txt]
+2021-06-10 09:02:23 [WARN]: "sam build" failed: /home/ec2-user/environment/app___vsctk___template.yaml
+2021-06-10 09:03:47 [INFO]: Successfully sent a telemetry batch of 4

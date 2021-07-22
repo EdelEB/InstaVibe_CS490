@@ -1,0 +1,9 @@
+Resources:
+  environment:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: app.register
+      CodeUri: /home/ec2-user/environment
+      Runtime: python3.7
+      Environment:
+        Variables: {}
